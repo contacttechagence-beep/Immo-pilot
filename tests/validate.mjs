@@ -25,7 +25,7 @@ for (const file of files) {
   } finally { rmSync(dir, { recursive: true, force: true }); }
 }
 const rlsAudit = readFileSync('tests/rls-audit.sql', 'utf8');
-for (const required of ['pg_policies', 'relrowsecurity', 'private.is_agency_member', 'public.create_agency', 'auth.uid()', 'does not replace multi-user runtime isolation tests']) {
+for (const required of ['pg_policies', 'relrowsecurity', 'private.is_agency_member', 'public.create_agency', 'auth.uid()', 'does not replace multi-user runtime isolation tests', 'created_by', 'Agency UPDATE policy', 'WITH CHECK']) {
   if (!rlsAudit.includes(required)) failures.push('tests/rls-audit.sql: contrôle de sécurité attendu absent: ' + required);
 }
 const app = readFileSync('app.html', 'utf8');
