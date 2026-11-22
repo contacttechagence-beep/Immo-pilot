@@ -41,6 +41,7 @@ La récupération de mot de passe envoie un lien ; le formulaire de nouveau mot 
 
 - supabase/migrations/202611220001_initial_schema.sql : schéma multi-agences et politiques RLS.
 - supabase/migrations/202611220002_tighten_table_and_function_grants.sql : réduction des privilèges SQL par défaut.
+- supabase/migrations/202611220003_index_foreign_keys.sql : index complémentaires sur les clés étrangères.
 
 Ces migrations ont été appliquées au projet. La deuxième migration a aussi été ajoutée au dépôt pour conserver une trace versionnée des permissions.
 
@@ -50,7 +51,7 @@ Ces migrations ont été appliquées au projet. La deuxième migration a aussi �
 - Le rôle anon n'a pas de droits directs sur les tables métier.
 - Le rôle authenticated a uniquement les droits de table prévus pour le prototype.
 - L'Advisor Supabase signale un avertissement sur public.create_agency(text), une fonction SECURITY DEFINER volontairement exécutable par les utilisateurs connectés pour créer leur première agence. Cette fonction vérifie auth.uid() et utilise un search_path vide, mais elle doit faire l'objet d'une revue de sécurité avant lancement.
-- Les Advisors signalent aussi trois clés étrangères sans index couvrant. Les index de recherche existants apparaissent inutilisés à ce stade car la base ne contient pas encore de données métier de test.
+- Les trois clés étrangères initialement signalées ont reçu des index complémentaires. Les Advisors marquent maintenant certains index comme inutilisés, ce qui est attendu sur une base de test encore vide ; il faudra réévaluer après chargement de données fictives.
 - L'isolation réelle entre deux comptes et deux agences n'a pas encore été démontrée par un test de bout en bout.
 - L'envoi d'invitations, la gestion des rôles et l'administration des membres ne sont pas implémentés.
 - Les limites et tarifs Supabase peuvent évoluer ; vérifier les conditions en vigueur avant un usage commercial.
