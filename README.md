@@ -4,6 +4,7 @@ Ce dépôt contient le prototype statique d'ImmoPilot, un outil en cours de conc
 
 ## Contenu
 - `index.html` : page de présentation et démonstration interactive.
+- `app.html` : tableau de bord de démonstration avec gestion locale des prospects (ajout, consultation, modification, suppression, recherche, filtre et export CSV).
 
 ## État actuel
 Cette version est une démonstration locale côté navigateur. La qualification repose sur des règles simples intégrées au JavaScript. Elle ne comporte **ni intelligence artificielle connectée, ni base de données, ni authentification, ni envoi de messages, ni intégration CRM**.
