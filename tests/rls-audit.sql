@@ -48,6 +48,48 @@ begin
     end if;
   end loop;
 
+  -- INSERT policies must bind the creator to the authenticated JWT user.
+  if exists (
+    select 1 from pg_policies p
+    where p.schemaname = 'public'
+      and p.tablename in ('prospects', 'activities')
+      and p.cmd = 'INSERT'
+      and (
+        coalesce(p.with_check, '') not like '%created_by%'
+        or coalesce(p.with_check, '') not like '%auth.uid()%'
+        or coalesce(p.with_check, '') not like '%private.is_agency_member%'
+      )
+  ) then
+    raise exception 'INSERT policy must check agency membership and created_by = auth.uid()';
+  end if;
+
+  -- UPDATE policies must constrain both the existing and resulting row.
+  if exists (
+    select 1 from pg_policies p
+    where p.schemaname = 'public'
+      and p.tablename in ('prospects', 'activities')
+      and p.cmd = 'UPDATE'
+      and (
+        coalesce(p.qual, '') not like '%private.is_agency_member%'
+        or coalesce(p.with_check, '') not like '%private.is_agency_member%'
+      )
+  ) then
+    raise exception 'UPDATE policy must enforce agency membership in USING and WITH CHECK';
+  end if;
+
+  if exists (
+    select 1 from pg_policies p
+    where p.schemaname = 'public'
+      and p.tablename = 'agencies'
+      and p.cmd = 'UPDATE'
+      and (
+        coalesce(p.qual, '') not like '%private.is_agency_admin%'
+        or coalesce(p.with_check, '') not like '%private.is_agency_admin%'
+      )
+  ) then
+    raise exception 'Agency UPDATE policy must enforce admin rights in USING and WITH CHECK';
+  end if;
+
   if not exists (
     select 1 from pg_proc p
     join pg_namespace n on n.oid = p.pronamespace
