@@ -97,3 +97,13 @@ Commit de référence : `3ccde847d4a1cec7d85edc9f4e4c033d016475f5`
 - GitHub Actions sur le commit `cbc7435a082413e11e9f112f32ced5b34e8c6041` : **SUCCÈS**, run 45062507649.
 - Limite importante : cet audit inspecte la configuration SQL ; il ne simule pas deux utilisateurs authentifiés et ne prouve pas l'isolation réelle des données entre agences.
 - Aucune donnée, table, politique ou fonction de production n'a été modifiée par cet audit.
+
+## Renforcement de l'audit RLS et CI (2026-11-22)
+
+- Renforcement de `tests/rls-audit.sql` : les politiques INSERT sur `prospects` et `activities` doivent vérifier l'appartenance à l'agence et `created_by = auth.uid()`; les politiques UPDATE doivent vérifier l'appartenance dans `USING` et `WITH CHECK`; la politique UPDATE de `agencies` doit vérifier le rôle administrateur dans les deux clauses.
+- L'audit SQL renforcé a été exécuté sur le projet Supabase connecté sans erreur. Il s'agit d'une lecture du catalogue : aucune table, donnée, politique ou fonction n'a été modifiée.
+- Le validateur CI vérifie maintenant aussi la présence de ces assertions renforcées.
+- GitHub Actions run 45062718089 (commit `9f3111f70674397e440eaf720b822a5b8880c29d`) : **SUCCÈS**.
+- GitHub Actions run 45062728327 (commit `13ff518b8718fde7ea60418687abfdfe4e928e80`) : **SUCCÈS**. Le dernier commit de la branche de développement est donc validé par le workflow statique.
+- Limite inchangée : aucun test réel multi-utilisateur n'a encore vérifié l'isolation entre agences. Le statut `Perdu` n'a pas encore été validé dans un navigateur connecté à Supabase.
+- Aucun environnement/branche Supabase supplémentaire n'a été créé. Aucun frais de branche de développement n'a été engagé ; poursuivre sans créer de ressource payante.
