@@ -87,3 +87,13 @@ Commit de référence : `3ccde847d4a1cec7d85edc9f4e4c033d016475f5`
 - Exécution GitHub Actions sur le commit `3b4d5ae9d2040287df992ddc7b6a443ec8fe36ef` : **SUCCÈS** (run 45062315079).
 - Une première exécution a échoué à cause d'une expression régulière mal échappée dans le script de test ; le défaut a été corrigé puis le workflow a été relancé avec succès.
 - Ces contrôles sont statiques : ils ne remplacent pas les tests de navigateur, les tests Auth/Supabase ni les tests d'isolation RLS.
+
+
+## Audit RLS catalogue ajouté (2026-11-22)
+
+- Ajout de `tests/rls-audit.sql` : audit en lecture seule des quatre activations RLS, des 11 politiques attendues et des garde-fous des fonctions `private.is_agency_member` et `public.create_agency`.
+- L'audit SQL a été exécuté sur le projet Supabase connecté : **aucune exception**, donc les contrôles du catalogue ont passé.
+- CI mis à jour pour vérifier la présence des contrôles RLS dans le dépôt.
+- GitHub Actions sur le commit `cbc7435a082413e11e9f112f32ced5b34e8c6041` : **SUCCÈS**, run 45062507649.
+- Limite importante : cet audit inspecte la configuration SQL ; il ne simule pas deux utilisateurs authentifiés et ne prouve pas l'isolation réelle des données entre agences.
+- Aucune donnée, table, politique ou fonction de production n'a été modifiée par cet audit.
