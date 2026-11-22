@@ -78,3 +78,12 @@ Commit de référence : `3ccde847d4a1cec7d85edc9f4e4c033d016475f5`
 - Les prospects `Perdu` ne sont plus présentés comme des actions commerciales encore actives dans les rappels.
 - Vérification effectuée : fichier relu depuis GitHub après commit et présence des éléments modifiés confirmée.
 - Vérification non effectuée : exécution dans un navigateur et test connecté à Supabase. Ce correctif reste donc à valider fonctionnellement avant fusion dans `main`.
+
+
+## CI frontend ajouté (2026-11-22)
+
+- Workflow `.github/workflows/validate.yml` : contrôle à chaque push sur `develop/accelerated` et lors des pull requests vers `main`.
+- Script `tests/validate.mjs` : vérifie le doctype, les identifiants HTML en double, la syntaxe des scripts JavaScript intégrés et la présence des fonctions CRM essentielles.
+- Exécution GitHub Actions sur le commit `3b4d5ae9d2040287df992ddc7b6a443ec8fe36ef` : **SUCCÈS** (run 45062315079).
+- Une première exécution a échoué à cause d'une expression régulière mal échappée dans le script de test ; le défaut a été corrigé puis le workflow a été relancé avec succès.
+- Ces contrôles sont statiques : ils ne remplacent pas les tests de navigateur, les tests Auth/Supabase ni les tests d'isolation RLS.
