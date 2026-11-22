@@ -1,25 +1,25 @@
-# ImmoPilot — démonstration commerciale
+# ImmoPilot — prototype SaaS
 
-Ce dépôt contient le prototype statique d'ImmoPilot, un outil en cours de conception pour aider les agences immobilières à structurer les demandes entrantes.
+ImmoPilot est un outil en cours de conception pour aider les agences immobilières à structurer les demandes entrantes, qualifier les prospects et suivre les prochaines actions.
 
 ## Contenu
-- `index.html` : page de présentation et démonstration interactive.
-- `app.html` : tableau de bord de démonstration avec gestion locale des prospects (ajout, consultation, modification, suppression, recherche, filtre et export CSV).
-- `SUPABASE_SETUP.md` : architecture V2 envisagée, procédure de configuration et limites de sécurité.
-- `supabase/migrations/202611220001_initial_schema.sql` : schéma PostgreSQL multi-agences avec politiques RLS.
+- index.html : page de présentation et démonstration interactive de qualification par règles simples.
+- app.html : tableau de bord connecté à Supabase Auth et PostgreSQL : création de compte, connexion, récupération de mot de passe, création initiale d'agence, gestion des prospects et export CSV.
+- SUPABASE_SETUP.md : configuration, architecture, état des tests et limites.
+- supabase/migrations/202611220001_initial_schema.sql : schéma PostgreSQL multi-agences avec RLS.
+- supabase/migrations/202611220002_tighten_table_and_function_grants.sql : privilèges SQL minimaux pour le front.
 
 ## État actuel
-Le site public reste une démonstration locale côté navigateur. La qualification repose sur des règles simples intégrées au JavaScript. Il ne comporte **pas encore de connexion à une base distante, d'authentification, d'envoi de messages ou d'intégration CRM**. La migration SQL V2 est un socle à installer et tester dans un projet Supabase séparé ; elle n'est pas exécutée automatiquement et aucun projet Supabase n'est connecté.
+Le tableau de bord a été relié au projet Supabase ImmoPilot (région Paris). Les prospects du tableau de bord sont désormais lus et enregistrés dans PostgreSQL, et non plus dans le stockage local de démonstration. La connexion utilise une clé publishable, jamais une clé privilégiée.
 
-## Tester
-Ouvrir `index.html` dans un navigateur récent. Utiliser uniquement les données fictives prévues pour la démonstration. Ne pas saisir de données personnelles réelles.
+Le parcours Auth nécessite que les URL du site soient configurées dans Supabase → Authentication → URL Configuration. Voir SUPABASE_SETUP.md.
 
-## Publication GitHub Pages
-Dans le dépôt GitHub : **Settings → Pages → Build and deployment → GitHub Actions**. Après le déploiement, l'URL publique est disponible dans les paramètres Pages.
+Ce dépôt public et le backend restent un prototype. L'isolation entre deux agences n'a pas encore été validée par des tests de bout en bout. Un avertissement Supabase concerne la fonction create_agency() en SECURITY DEFINER ; des index de clés étrangères restent à optimiser.
 
-## Avant tout pilote avec une agence
-La migration V2 doit être testée avec au moins deux comptes et deux agences fictives pour vérifier l'isolation RLS. Il reste à développer l'interface de connexion, le parcours d'invitation, la liaison du front au backend, les sauvegardes/restaurations, les contrôles d'abus, l'export/suppression et le cadrage RGPD/contractuel. Le choix d'une région UE ne suffit pas à établir la conformité.
+## Publication
+Le site est publié via GitHub Pages. Le tableau de bord se trouve dans app.html.
 
-Ne jamais publier une clé API, une clé Supabase `service_role`, un mot de passe ou un autre secret dans ce dépôt public. Une clé publique ne pourra être utilisée dans le navigateur qu'après validation des politiques RLS. Toute future intégration OpenAI devra passer par un serveur et une variable d'environnement secrète.
+## Sécurité
+Ne jamais ajouter de clé service_role, de clé secrète, de mot de passe, de jeton privé ou de données personnelles à ce dépôt public. Les clés publishable sont destinées au navigateur, à condition que les politiques RLS soient correctes.
 
-Les scores de démonstration sont indicatifs et ne doivent pas servir à accepter ou refuser un client. Les informations et réponses doivent être vérifiées par un humain.
+**Ne pas utiliser avec de vrais prospects clients tant que les tests d'isolation, l'audit de sécurité et la validation RGPD ne sont pas terminés.** Toute future intégration IA devra passer par un serveur et une variable d'environnement secrète.
