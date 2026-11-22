@@ -1,38 +1,62 @@
-# Préparer le backend ImmoPilot (V2)
+# ImmoPilot — configuration Supabase et état du prototype
 
-Ce dépôt est public et héberge le front statique sur GitHub Pages. Le backend n'est **pas encore connecté**. Cette étape ajoute le schéma SQL de départ et les instructions de configuration, sans clé secrète et sans donnée client.
+Le projet Supabase ImmoPilot existe dans la région Paris (eu-west-3). Le tableau de bord web utilise maintenant Supabase Auth et PostgreSQL. Il s'agit d'un prototype de validation, pas d'un service prêt pour les données réelles.
 
-## Architecture retenue pour le prototype V2
+## Architecture installée
 
-- Front : HTML/JavaScript statique, publié par GitHub Pages.
-- Backend envisagé : Supabase (PostgreSQL + Auth), avec un projet situé dans l'Union européenne.
-- Isolation : chaque ligne métier porte un `agency_id`; les politiques PostgreSQL RLS contrôlent l'appartenance à l'agence.
-- Création d'agence : fonction SQL `create_agency()`, qui crée l'agence et son premier membre propriétaire dans une transaction.
-- Tables : `agencies`, `agency_members`, `prospects`, `activities`.
+- Front statique : GitHub Pages, fichier app.html.
+- Backend : Supabase Auth + PostgreSQL.
+- Projet Supabase : zzcvvvfnkjhdhrwqbfgm.
+- URL API : https://zzcvvvfnkjhdhrwqbfgm.supabase.co.
+- Tables : agencies, agency_members, prospects, activities.
+- Isolation par agence : RLS et colonne agency_id.
+- Authentification : création de compte par e-mail, confirmation d'adresse, connexion, déconnexion et récupération de mot de passe.
+- Les prospects créés depuis le tableau de bord sont enregistrés dans PostgreSQL et chargés depuis l'agence de l'utilisateur connecté.
 
-## Configuration manuelle requise
+Le navigateur utilise une clé publishable Supabase. Elle est conçue pour être publique et ne doit jamais être confondue avec une clé service_role ou une clé secret. Aucune clé privilégiée, aucun mot de passe de base de données et aucun jeton privé ne doivent être placés dans le dépôt.
 
-1. Créer un compte/projet Supabase depuis le tableau de bord officiel.
-2. Choisir une région UE précise, idéalement **Paris (eu-west-3)** ou **Frankfurt (eu-central-1)** selon la latence et les exigences contractuelles.
-3. Dans **SQL Editor**, exécuter le fichier `supabase/migrations/202611220001_initial_schema.sql`.
-4. Dans **Authentication**, configurer les URL autorisées pour le futur site GitHub Pages et vérifier le parcours de confirmation d'adresse e-mail.
-5. Ne pas connecter de vraies agences à cette étape. Le schéma doit d'abord être testé avec deux comptes et deux agences fictives.
+## Action manuelle indispensable — URL Auth
 
-## Limites du gratuit
+Avant de tester l'inscription, ouvrir le projet Supabase puis Authentication → URL Configuration :
 
-Au 22 novembre 2026, la page tarifaire Supabase indique un plan Free à 0 $, 500 MB de base de données, 50 000 utilisateurs actifs mensuels et une mise en pause possible après une semaine d'inactivité. Le plan gratuit n'inclut pas les sauvegardes automatiques. Il convient à un prototype et à des tests, pas à une promesse de disponibilité pour un SaaS commercial. Vérifier les conditions avant toute mise en production.
+1. Régler Site URL sur :
+   https://contacttechagence-beep.github.io/Immo-pilot/app.html
+2. Ajouter exactement cette même adresse dans Redirect URLs.
+3. Enregistrer. Conserver la confirmation d'adresse e-mail activée.
+4. Vérifier que les e-mails de confirmation et de réinitialisation redirigent bien vers l'application.
 
-## Sécurité — règles non négociables
+La configuration de redirection est nécessaire pour les confirmations et les réinitialisations. Documentation officielle : https://supabase.com/docs/guides/auth/redirect-urls
 
-- Ne jamais mettre de clé `service_role`, mot de passe, jeton privé ou secret dans le dépôt GitHub, le HTML ou le JavaScript.
-- Une clé publique Supabase ne pourra être utilisée dans le navigateur qu'après vérification complète des politiques RLS.
-- La migration active RLS sur toutes les tables métier et ne donne aucun accès au rôle `anon`.
-- Les membres sont créés côté serveur dans un futur flux d'invitation contrôlé. Ne pas ouvrir l'insertion directe dans `agency_members`.
-- Tester l'isolation : un compte de l'agence A ne doit jamais lire, modifier ou supprimer les lignes de l'agence B, même en modifiant manuellement les identifiants dans une requête.
-- La fonction de création d'agence et les politiques SQL doivent être testées dans un projet de test avant tout usage réel.
+## Parcours utilisateur actuellement codé
+
+1. L'utilisateur crée un compte avec e-mail et mot de passe.
+2. Si la confirmation e-mail est activée, il clique sur le lien reçu puis revient à l'application pour se connecter.
+3. À la première connexion, l'application lui demande le nom de son agence et appelle create_agency().
+4. L'application charge les prospects associés à son agence.
+5. Les opérations d'ajout, modification, suppression et export CSV utilisent les données Supabase.
+
+La récupération de mot de passe envoie un lien ; le formulaire de nouveau mot de passe s'affiche à l'ouverture du lien de récupération.
+
+## Migrations
+
+- supabase/migrations/202611220001_initial_schema.sql : schéma multi-agences et politiques RLS.
+- supabase/migrations/202611220002_tighten_table_and_function_grants.sql : réduction des privilèges SQL par défaut.
+
+Ces migrations ont été appliquées au projet. La deuxième migration a aussi été ajoutée au dépôt pour conserver une trace versionnée des permissions.
+
+## Vérifications et limites connues
+
+- Les quatre tables existent et RLS est activé.
+- Le rôle anon n'a pas de droits directs sur les tables métier.
+- Le rôle authenticated a uniquement les droits de table prévus pour le prototype.
+- L'Advisor Supabase signale un avertissement sur public.create_agency(text), une fonction SECURITY DEFINER volontairement exécutable par les utilisateurs connectés pour créer leur première agence. Cette fonction vérifie auth.uid() et utilise un search_path vide, mais elle doit faire l'objet d'une revue de sécurité avant lancement.
+- Les Advisors signalent aussi trois clés étrangères sans index couvrant. Les index de recherche existants apparaissent inutilisés à ce stade car la base ne contient pas encore de données métier de test.
+- L'isolation réelle entre deux comptes et deux agences n'a pas encore été démontrée par un test de bout en bout.
+- L'envoi d'invitations, la gestion des rôles et l'administration des membres ne sont pas implémentés.
+- Les limites et tarifs Supabase peuvent évoluer ; vérifier les conditions en vigueur avant un usage commercial.
 
 ## Avant un pilote réel
 
-Il reste à développer et tester : interface de connexion/déconnexion, récupération de mot de passe, liaison du front à Supabase, invitation des collaborateurs, gestion des rôles, validation serveur, limitation des abus, sauvegardes et restauration, journalisation, politique de conservation/suppression, export des données, DPA et analyse RGPD. Le choix d'une région UE ne suffit pas à rendre le traitement conforme.
+Il faut encore réaliser un test avec au moins deux comptes et deux agences fictives, contrôler les accès inter-agences, auditer la fonction de création d'agence et les politiques RLS, traiter les index signalés, configurer les sauvegardes et la restauration, les journaux, les règles de conservation/suppression, les conditions contractuelles et le RGPD. Le choix d'une région UE ne suffit pas à établir la conformité.
 
-**Tant que ces étapes ne sont pas terminées, conserver uniquement des données fictives.**
+**Ne pas saisir de données personnelles réelles ou de prospects clients avant la fin de ces contrôles.**
