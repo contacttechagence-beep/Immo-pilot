@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="ImmoPilot aide les agences immobilières à structurer les demandes entrantes et préparer leurs réponses.">
+<title>ImmoPilot — Les demandes immobilières, mieux organisées</title>
+<style>
+:root{--navy:#102c42;--blue:#245d7e;--pale:#eef4f7;--ink:#152633;--muted:#60717e;--line:#dce5ea;--white:#fff;--gold:#d6b477}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#fff}
+a{color:inherit}.wrap{max-width:1120px;margin:auto;padding:0 24px}
+header{background:var(--navy);color:white}.nav{height:78px;display:flex;align-items:center;justify-content:space-between}.brand{font-weight:800;letter-spacing:.04em;font-size:21px}.brand span{color:var(--gold)}.nav a{font-size:14px;text-decoration:none;color:#e2ebf0}
+.hero{padding:82px 0 88px;background:linear-gradient(120deg,#102c42 0%,#194866 100%);color:white}.eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:#d6b477;font-weight:800}.hero h1{font-size:clamp(38px,6vw,64px);line-height:1.04;letter-spacing:-.04em;max-width:760px;margin:18px 0}.hero p{font-size:19px;color:#d8e5ec;max-width:650px}.btn{display:inline-block;padding:14px 21px;border-radius:8px;background:var(--gold);color:#172b39;text-decoration:none;font-weight:800;margin-top:18px}.subnote{font-size:12px!important;color:#b8cbd6!important;margin-top:12px}
+section{padding:68px 0}.section-head{max-width:700px;margin-bottom:30px}.section-head h2{font-size:34px;line-height:1.12;letter-spacing:-.03em;margin:9px 0 12px}.section-head p{color:var(--muted);margin:0}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{border:1px solid var(--line);border-radius:13px;padding:23px;background:white}.num{font-size:12px;color:var(--blue);font-weight:800;letter-spacing:.12em}.card h3{font-size:18px;margin:12px 0 7px}.card p{color:var(--muted);font-size:14px;margin:0}
+.demo{background:var(--pale)}.demo-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:30px;align-items:start}.demo-box{background:white;border:1px solid var(--line);border-radius:14px;padding:23px;box-shadow:0 12px 35px #17364b0d}.demo-box h3{margin:0 0 16px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}label{font-size:12px;font-weight:700;color:#405361}input,select,textarea{width:100%;padding:11px;border:1px solid #cbd7df;border-radius:7px;font:inherit;font-size:14px}textarea{min-height:80px}button{border:0;border-radius:8px;background:var(--navy);color:white;padding:12px 17px;font-weight:800;cursor:pointer;margin-top:14px}
+.result{margin-top:16px;padding:15px;background:#f5f8fa;border:1px solid var(--line);border-radius:9px;display:none}.result strong{display:block;margin-bottom:5px}.disclaimer{font-size:12px;color:var(--muted);margin-top:12px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.step{border-top:2px solid var(--gold);padding-top:16px}.step b{font-size:14px}.step p{font-size:14px;color:var(--muted)}
+.cta{background:var(--navy);color:white;text-align:center}.cta h2{font-size:34px;line-height:1.15;max-width:700px;margin:10px auto}.cta p{color:#d4e0e7}.cta a{margin-top:12px}
+footer{padding:26px 0;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+@media(max-width:760px){.cards,.steps,.demo-grid{grid-template-columns:1fr}.hero{padding:62px 0}.fields{grid-template-columns:1fr}.field.full{grid-column:auto}.section-head h2{font-size:29px}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><div class="brand">IMMO<span>PILOT</span></div><a href="#demo">Voir la démonstration ↓</a></div></header>
+<main>
+<div class="hero"><div class="wrap"><div class="eyebrow">Assistant de qualification immobilière</div>
+<h1>Chaque demande mérite une réponse claire.</h1>
+<p>ImmoPilot aide les agences à organiser les demandes entrantes, repérer les informations à confirmer et préparer un premier brouillon de réponse.</p>
+<a class="btn" href="#demo">Tester la démonstration</a>
+<p class="subnote">Prototype de démonstration — aucune intégration à votre messagerie ou à votre CRM à ce stade.</p>
+</div></div>
+<section><div class="wrap"><div class="section-head"><div class="eyebrow">Le problème</div><h2>Moins de demandes oubliées. Plus de visibilité sur la suite à donner.</h2><p>Les demandes arrivent par plusieurs canaux et les informations utiles sont parfois incomplètes. ImmoPilot propose un point de départ structuré pour le suivi humain.</p></div>
+<div class="cards">
+<div class="card"><div class="num">01 / STRUCTURER</div><h3>Centraliser les éléments utiles</h3><p>Type de projet, secteur, budget déclaré et délai souhaité réunis dans une fiche lisible.</p></div>
+<div class="card"><div class="num">02 / REPÉRER</div><h3>Voir ce qu'il manque</h3><p>Une synthèse fait ressortir les informations à confirmer avant de poursuivre l'échange.</p></div>
+<div class="card"><div class="num">03 / PRÉPARER</div><h3>Gagner du temps sur la réponse</h3><p>Un brouillon de message peut servir de base, puis être relu et validé par un membre de l'agence.</p></div>
+</div></div></section>
+<section class="demo" id="demo"><div class="wrap demo-grid">
+<div class="section-head"><div class="eyebrow">Démonstration interactive</div><h2>Essayez avec une demande fictive.</h2><p>Remplissez quelques champs. La démonstration locale génère une qualification indicative par règles simples. Elle ne contacte aucun prospect.</p></div>
+<div class="demo-box"><h3>Nouvelle demande</h3>
+<form id="form"><div class="fields">
+<div class="field"><label>Nom fictif</label><input id="name" value="Camille Martin" required></div>
+<div class="field"><label>Type de projet</label><select id="project"><option>Achat résidence principale</option><option>Investissement locatif</option><option>Location</option><option>Vente d'un bien</option></select></div>
+<div class="field"><label>Budget (€)</label><input id="budget" type="number" value="185000" min="0"></div>
+<div class="field"><label>Financement déclaré</label><select id="finance"><option>À préciser</option><option>Accord de principe obtenu</option><option>Financement validé</option><option>Demande de prêt à faire</option></select></div>
+<div class="field"><label>Délai souhaité</label><select id="timing"><option>À préciser</option><option>Moins d'un mois</option><option>1 à 3 mois</option><option>3 à 6 mois</option><option>Plus de 6 mois</option></select></div>
+<div class="field"><label>Secteur</label><input id="area" value="Amiens"></div>
+<div class="field full"><label>Précisions</label><textarea id="details">Recherche un T3 proche du centre, visite possible en fin de semaine.</textarea></div>
+</div><button type="submit">Générer la fiche de démonstration</button></form>
+<div class="result" id="result" aria-live="polite"></div>
+<p class="disclaimer">Données fictives uniquement. Ne saisissez aucune donnée personnelle réelle dans cette démo.</p>
+</div></div></section>
+<section><div class="wrap"><div class="section-head"><div class="eyebrow">Déploiement</div><h2>Un pilote cadré avant toute automatisation.</h2><p>La version de démonstration ne prétend pas remplacer un CRM ni une équipe commerciale.</p></div>
+<div class="steps"><div class="step"><b>1. Comprendre votre processus</b><p>Identifier vos canaux d'entrée et les informations dont vos équipes ont réellement besoin.</p></div><div class="step"><b>2. Tester sur un cas fictif</b><p>Valider le format des fiches et les brouillons, sans transmettre de données de prospects.</p></div><div class="step"><b>3. Cadrer un pilote</b><p>Définir sécurité, accès, confidentialité, conformité RGPD et intégrations avant un test réel.</p></div></div></div></section>
+<div class="cta"><div class="wrap"><div class="eyebrow">ImmoPilot</div><h2>Un premier aperçu concret, sans engagement.</h2><p>Découvrez le fonctionnement du prototype et dites-nous quelles tâches répétitives vous souhaitez simplifier.</p><a class="btn" href="#demo">Lancer la démo</a></div></div>
+</main>
+<footer><div class="wrap">© ImmoPilot — prototype commercial. Aucune promesse de résultat commercial. Les scores éventuels sont indicatifs et ne doivent pas servir à accepter ou refuser un client. Les réponses doivent être vérifiées par un humain.</div></footer>
+<script>
+const $=id=>document.getElementById(id);
+$('form').addEventListener('submit',e=>{
+ e.preventDefault();
+ const budget=Number($('budget').value)||0, timing=$('timing').value, finance=$('finance').value;
+ let score=0, missing=[];
+ if(budget>0)score+=20;else missing.push('Budget à préciser');
+ if(finance==='Financement validé')score+=25;else if(finance==='Accord de principe obtenu')score+=18;else missing.push('État du financement à confirmer');
+ if(timing==='Moins d’un mois'||timing==="Moins d'un mois")score+=25;else if(timing==='1 à 3 mois')score+=18;else if(timing==='À préciser')missing.push('Délai du projet à préciser');
+ if($('area').value.trim())score+=10;else missing.push('Secteur à préciser');
+ if($('details').value.trim())score+=10;else missing.push('Besoin détaillé à recueillir');
+ const priority=score>=65?'Demande assez complète':score>=40?'Demande à préciser':'Informations insuffisantes';
+ $('result').style.display='block';
+ $('result').innerHTML='<strong>'+priority+' · '+score+'/90 points indicatifs</strong><p><b>Projet :</b> '+$('project').value+' — '+$('area').value+'</p><p><b>À confirmer :</b> '+(missing.length?missing.join(' · '):'Vérifier les déclarations et convenir de la prochaine étape.')+'</p><p><b>Prochaine action :</b> relire les informations, puis contacter le prospect selon le processus de l’agence.</p>';
+});
+</script></body></html>
