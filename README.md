@@ -8,6 +8,7 @@ ImmoPilot est un outil en cours de conception pour aider les agences immobilièr
 - SUPABASE_SETUP.md : configuration, architecture, état des tests et limites.
 - supabase/migrations/202611220001_initial_schema.sql : schéma PostgreSQL multi-agences avec RLS.
 - supabase/migrations/202611220002_tighten_table_and_function_grants.sql : privilèges SQL minimaux pour le front.
+- supabase/migrations/202611220003_index_foreign_keys.sql : index des clés étrangères.
 
 ## État actuel
 Le tableau de bord a été relié au projet Supabase ImmoPilot (région Paris). Les prospects du tableau de bord sont désormais lus et enregistrés dans PostgreSQL, et non plus dans le stockage local de démonstration. La connexion utilise une clé publishable, jamais une clé privilégiée.
