@@ -24,6 +24,10 @@ for (const file of files) {
     }
   } finally { rmSync(dir, { recursive: true, force: true }); }
 }
+const rlsAudit = readFileSync('tests/rls-audit.sql', 'utf8');
+for (const required of ['pg_policies', 'relrowsecurity', 'private.is_agency_member', 'public.create_agency', 'auth.uid()', 'does not replace multi-user runtime isolation tests']) {
+  if (!rlsAudit.includes(required)) failures.push('tests/rls-audit.sql: contrôle de sécurité attendu absent: ' + required);
+}
 const app = readFileSync('app.html', 'utf8');
 for (const required of ['Nouveau', 'À contacter', 'En cours', 'Converti', 'Perdu', 'Historique des échanges', 'Exporter en CSV', 'Rappels et actions']) {
   if (!app.includes(required)) failures.push('app.html: élément fonctionnel attendu absent: ' + required);
