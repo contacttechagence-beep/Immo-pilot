@@ -31,7 +31,7 @@ Commit de référence : `3ccde847d4a1cec7d85edc9f4e4c033d016475f5`
 3. Les index `prospects_created_by_idx` et `activities_created_by_idx` sont signalés comme inutilisés sur cette petite base de test. Ne pas les supprimer avant mesure avec des données et requêtes représentatives.
 4. Les branches GitHub ne sont pas protégées.
 5. L'isolation entre deux comptes appartenant à deux agences distinctes n'a pas encore été testée de bout en bout.
-6. L'interface expose quatre statuts tandis que la contrainte SQL autorise aussi `Perdu`. Harmonisation à effectuer sans perte de données ni suppression du statut.
+6. L'interface expose désormais les cinq statuts de la contrainte SQL (`Nouveau`, `À contacter`, `En cours`, `Converti`, `Perdu`). Le statut `Perdu` est disponible dans le filtre et le formulaire, comptabilisé séparément et exclu des rappels actifs.
 
 ## Plan d'exécution
 
@@ -70,3 +70,11 @@ Commit de référence : `3ccde847d4a1cec7d85edc9f4e4c033d016475f5`
 - Toute migration doit être versionnée et testée en environnement isolé avant production.
 - Toute modification sensible doit être vérifiée par un test reproductible.
 - Ne jamais exposer de clé `service_role`, de secret ou de données personnelles dans le dépôt.
+
+
+## Correctif réalisé sur `develop/accelerated` (2026-11-22)
+
+- Alignement de l'interface CRM avec le statut SQL `Perdu` : filtre, formulaire, badge, compteur dédié.
+- Les prospects `Perdu` ne sont plus présentés comme des actions commerciales encore actives dans les rappels.
+- Vérification effectuée : fichier relu depuis GitHub après commit et présence des éléments modifiés confirmée.
+- Vérification non effectuée : exécution dans un navigateur et test connecté à Supabase. Ce correctif reste donc à valider fonctionnellement avant fusion dans `main`.
