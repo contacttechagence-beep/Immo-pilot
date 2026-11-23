@@ -131,3 +131,11 @@ Commit de référence : `3ccde847d4a1cec7d85edc9f4e4c033d016475f5`
 7. Terminer sauvegarde/restauration, conservation/suppression, export RGPD, audit sécurité, tests charge/mobile et préparation de production.
 
 Aucune de ces étapes n'est considérée comme terminée simplement parce qu'elle figure dans la feuille de route. Les nouveaux modules ne seront pas activés sur la production tant que leurs migrations et politiques d'accès ne seront pas testées en environnement isolé.
+
+
+## Contrainte du plan Supabase gratuit
+
+- La documentation Supabase consultée le 2026-11-23 indique que la protection Auth contre les mots de passe compromis (HaveIBeenPwned / Leaked Password Protection) est disponible uniquement sur le plan Pro et supérieur.
+- Le projet ImmoPilot est maintenu sur le plan gratuit conformément à la contrainte budgétaire de l'utilisateur. Ne pas activer une option payante ni déclencher une mise à niveau sans autorisation explicite.
+- L'avertissement Advisor `auth_leaked_password_protection` est donc documenté comme limitation du plan, et non comme une correction réalisable sans frais. Les autres mesures gratuites de sécurité des mots de passe (longueur minimale, règles de robustesse, limitation des tentatives si disponible) restent à auditer dans la configuration Auth.
+- Référence officielle: https://supabase.com/docs/guides/auth/password-security
