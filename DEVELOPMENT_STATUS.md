@@ -107,3 +107,27 @@ Commit de référence : `3ccde847d4a1cec7d85edc9f4e4c033d016475f5`
 - GitHub Actions run 45062728327 (commit `13ff518b8718fde7ea60418687abfdfe4e928e80`) : **SUCCÈS**. Le dernier commit de la branche de développement est donc validé par le workflow statique.
 - Limite inchangée : aucun test réel multi-utilisateur n'a encore vérifié l'isolation entre agences. Le statut `Perdu` n'a pas encore été validé dans un navigateur connecté à Supabase.
 - Aucun environnement/branche Supabase supplémentaire n'a été créé. Aucun frais de branche de développement n'a été engagé ; poursuivre sans créer de ressource payante.
+
+
+## Vérification multi-comptes et sélecteur multi-agences (2026-11-23)
+
+- Test RLS d'exécution réalisé dans une transaction SQL temporaire, avec deux utilisateurs authentifiés existants, deux agences de test, deux prospects et deux activités fictifs.
+- Pour chacun des deux utilisateurs, les requêtes sous le rôle `authenticated` et avec `auth.uid()` simulé n'ont retourné que l'agence, l'adhésion, le prospect et l'activité de son périmètre. Le prospect de l'autre agence était invisible (0 ligne).
+- Toutes les lignes de test ont été annulées par `ROLLBACK`; aucune donnée persistante n'a été ajoutée ou modifiée.
+- L'inspection des adhésions réelles a montré qu'un même compte peut appartenir à plusieurs agences. L'ancienne application ne chargeait qu'une seule adhésion (`limit(1)`) et ne permettait pas de changer d'agence.
+- Correctif sur `develop/accelerated`: chargement de toutes les adhésions, affichage d'un sélecteur quand plusieurs agences sont accessibles, mémorisation locale de l'agence choisie par compte et rechargement des prospects à chaque changement. Aucune modification de `main` ni de la base n'a été faite.
+- Validateur statique étendu aux contrôles du sélecteur multi-agences.
+- GitHub Actions run 45252860767 (commit `ae2bb67c67819512c6ea0135d2564a08061a751a`) : **SUCCÈS**.
+- Limites: le test SQL démontre les prédicats RLS sous le rôle `authenticated`, mais ne remplace pas encore le test de parcours complet dans deux sessions navigateur séparées. Le nouveau sélecteur doit aussi être validé en navigateur connecté.
+
+## Prochaines étapes non terminées
+
+1. Parcours navigateur Auth complet avec deux sessions séparées et changement d'agence.
+2. Activer la protection des mots de passe compromis via la configuration Auth après vérification des paramètres actuels.
+3. Étendre le modèle de données avec biens, mandats, clients/dossiers, documents, tâches, rendez-vous, notifications, équipes/invitations et journal d'audit, avec RLS par agence.
+4. Implémenter les écrans et workflows correspondants, puis les tests unitaires et d'intégration.
+5. Ajouter l'IA côté serveur avec validation humaine et secrets uniquement côté serveur.
+6. Ajouter intégrations de messagerie/calendriers/API, statistiques, plans Essentiel/Agence/Réseau, paiements et administration SaaS.
+7. Terminer sauvegarde/restauration, conservation/suppression, export RGPD, audit sécurité, tests charge/mobile et préparation de production.
+
+Aucune de ces étapes n'est considérée comme terminée simplement parce qu'elle figure dans la feuille de route. Les nouveaux modules ne seront pas activés sur la production tant que leurs migrations et politiques d'accès ne seront pas testées en environnement isolé.
