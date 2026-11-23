@@ -56,6 +56,12 @@ Ces migrations ont été appliquées au projet. La deuxième migration a aussi �
 - L'envoi d'invitations, la gestion des rôles et l'administration des membres ne sont pas implémentés.
 - Les limites et tarifs Supabase peuvent évoluer ; vérifier les conditions en vigueur avant un usage commercial.
 
+## Multi-agences et isolation vérifiée
+
+L'application sur la branche `develop/accelerated` charge désormais toutes les adhésions de l'utilisateur et permet de sélectionner l'agence active. Le choix est mémorisé localement pour chaque compte. La branche `main` publiée n'est pas encore modifiée.
+
+Un test SQL temporaire a été exécuté avec deux utilisateurs et deux agences fictives dans une transaction terminée par `ROLLBACK`. Sous le rôle `authenticated`, chaque utilisateur ne voyait que l'agence, le prospect et l'activité associés à son adhésion; l'enregistrement de l'autre agence était invisible. Ce test de politiques RLS ne remplace pas le test complet dans deux navigateurs et deux sessions Auth distinctes.
+
 ## Avant un pilote réel
 
 Il faut encore réaliser un test avec au moins deux comptes et deux agences fictives, contrôler les accès inter-agences, auditer la fonction de création d'agence et les politiques RLS, traiter les index signalés, configurer les sauvegardes et la restauration, les journaux, les règles de conservation/suppression, les conditions contractuelles et le RGPD. Le choix d'une région UE ne suffit pas à établir la conformité.
