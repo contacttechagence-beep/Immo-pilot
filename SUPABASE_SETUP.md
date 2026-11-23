@@ -56,6 +56,10 @@ Ces migrations ont été appliquées au projet. La deuxième migration a aussi �
 - L'envoi d'invitations, la gestion des rôles et l'administration des membres ne sont pas implémentés.
 - Les limites et tarifs Supabase peuvent évoluer ; vérifier les conditions en vigueur avant un usage commercial.
 
+## Protection des mots de passe compromis
+
+Supabase documente la protection contre les mots de passe compromis (HaveIBeenPwned) comme une fonctionnalité réservée au plan Pro et supérieur. Le projet restant sur le plan gratuit, cette option n'est pas activée et aucune mise à niveau payante ne sera déclenchée. Voir la documentation officielle: https://supabase.com/docs/guides/auth/password-security.
+
 ## Multi-agences et isolation vérifiée
 
 L'application sur la branche `develop/accelerated` charge désormais toutes les adhésions de l'utilisateur et permet de sélectionner l'agence active. Le choix est mémorisé localement pour chaque compte. La branche `main` publiée n'est pas encore modifiée.
