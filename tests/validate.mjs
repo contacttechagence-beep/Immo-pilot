@@ -29,10 +29,12 @@ for (const required of ['pg_policies', 'relrowsecurity', 'private.is_agency_memb
   if (!rlsAudit.includes(required)) failures.push('tests/rls-audit.sql: contrôle de sécurité attendu absent: ' + required);
 }
 const app = readFileSync('app.html', 'utf8');
-for (const required of ['Nouveau', 'À contacter', 'En cours', 'Converti', 'Perdu', 'Historique des échanges', 'Exporter en CSV', 'Rappels et actions']) {
+for (const required of ['Nouveau', 'À contacter', 'En cours', 'Converti', 'Perdu', 'Historique des échanges', 'Exporter en CSV', 'Rappels et actions', 'agencySwitcher', 'selectAgency', 'agencyMemberships']) {
   if (!app.includes(required)) failures.push('app.html: élément fonctionnel attendu absent: ' + required);
 }
 if (!app.includes('<option>Perdu</option>')) failures.push('app.html: statut Perdu non disponible');
+if (!app.includes('immopilot:selected-agency:')) failures.push('app.html: agence active non mémorisée par compte');
+if (!app.includes("addEventListener('change',e=>selectAgency(e.target.value))")) failures.push('app.html: sélecteur multi-agence sans gestionnaire de changement');
 if (failures.length) {
   console.error('ÉCHEC DES CONTRÔLES ImmoPilot\n' + failures.map(x => '- ' + x).join('\n'));
   process.exit(1);
