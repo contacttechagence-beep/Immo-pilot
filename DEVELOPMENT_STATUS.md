@@ -139,3 +139,11 @@ Aucune de ces étapes n'est considérée comme terminée simplement parce qu'ell
 - Le projet ImmoPilot est maintenu sur le plan gratuit conformément à la contrainte budgétaire de l'utilisateur. Ne pas activer une option payante ni déclencher une mise à niveau sans autorisation explicite.
 - L'avertissement Advisor `auth_leaked_password_protection` est donc documenté comme limitation du plan, et non comme une correction réalisable sans frais. Les autres mesures gratuites de sécurité des mots de passe (longueur minimale, règles de robustesse, limitation des tentatives si disponible) restent à auditer dans la configuration Auth.
 - Référence officielle: https://supabase.com/docs/guides/auth/password-security
+
+
+## Durcissement de l'export CSV (2026-11-23)
+
+- L'export CSV neutralise maintenant les valeurs commençant par `=`, `+`, `-` ou `@` (y compris après espaces) en préfixant une apostrophe, afin de limiter l'exécution de formules lors de l'ouverture dans un tableur.
+- Le validateur statique vérifie la présence de cette protection et le JavaScript intégré.
+- GitHub Actions run 45253233507 (commit `83bec768b8aa0500ef802db7db1b35355d73a0b8`) : **SUCCÈS**.
+- La correction est uniquement sur `develop/accelerated`; l'export de la version publiée sur `main` reste inchangé tant que la validation complète n'est pas terminée.
