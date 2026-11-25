@@ -6,6 +6,7 @@ on:
     paths:
       - 'supabase/**'
       - 'tests/local-smoke.sql'
+      - 'tests/rls-runtime.sql'
       - '.github/workflows/supabase-local.yml'
   pull_request:
     paths:
@@ -36,3 +37,5 @@ jobs:
         run: supabase db reset --local
       - name: Verify schema and RLS policies
         run: psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f tests/local-smoke.sql
+      - name: Verify multi-agency runtime isolation and CRUD
+        run: psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f tests/rls-runtime.sql
