@@ -8,7 +8,7 @@ Le projet Supabase ImmoPilot existe dans la région Paris (eu-west-3). Le tablea
 - Backend : Supabase Auth + PostgreSQL.
 - Projet Supabase : zzcvvvfnkjhdhrwqbfgm.
 - URL API : https://zzcvvvfnkjhdhrwqbfgm.supabase.co.
-- Tables : agencies, agency_members, prospects, activities.
+- Tables déjà déployées : agencies, agency_members, prospects, activities.\n- Tables préparées dans une migration non encore appliquée : properties, mandates.
 - Isolation par agence : RLS et colonne agency_id.
 - Authentification : création de compte par e-mail, confirmation d'adresse, connexion, déconnexion et récupération de mot de passe.
 - Les prospects créés depuis le tableau de bord sont enregistrés dans PostgreSQL et chargés depuis l'agence de l'utilisateur connecté.
@@ -41,7 +41,7 @@ La récupération de mot de passe envoie un lien ; le formulaire de nouveau mot 
 
 - supabase/migrations/202611220001_initial_schema.sql : schéma multi-agences et politiques RLS.
 - supabase/migrations/202611220002_tighten_table_and_function_grants.sql : réduction des privilèges SQL par défaut.
-- supabase/migrations/202611220003_index_foreign_keys.sql : index complémentaires sur les clés étrangères.
+- supabase/migrations/202611220003_index_foreign_keys.sql : index complémentaires sur les clés étrangères.\n- supabase/migrations/202611250001_properties_and_mandates.sql : biens et mandats, RLS, contraintes multi-agences et index. Cette migration est versionnée mais non appliquée à Supabase tant qu'un environnement de test isolé n'est pas disponible.
 
 Ces migrations ont été appliquées au projet. La deuxième migration a aussi été ajoutée au dépôt pour conserver une trace versionnée des permissions.
 
@@ -71,3 +71,10 @@ Un test SQL temporaire a été exécuté avec deux utilisateurs et deux agences 
 Il faut encore réaliser un test avec au moins deux comptes et deux agences fictives, contrôler les accès inter-agences, auditer la fonction de création d'agence et les politiques RLS, traiter les index signalés, configurer les sauvegardes et la restauration, les journaux, les règles de conservation/suppression, les conditions contractuelles et le RGPD. Le choix d'une région UE ne suffit pas à établir la conformité.
 
 **Ne pas saisir de données personnelles réelles ou de prospects clients avant la fin de ces contrôles.**
+
+
+## Module biens et mandats — migration préparée
+
+La migration `202611250001_properties_and_mandates.sql` ajoute les tables `properties` et `mandates`, avec références uniques par agence, contraintes de prix/surface/statuts/dates, relation composite mandat-bien-agence, champs de traçabilité, triggers `updated_at`, index et politiques RLS SELECT/INSERT/UPDATE/DELETE. Les insertions exigent l'appartenance à l'agence et `created_by = auth.uid()`; les modifications vérifient l'agence dans USING et WITH CHECK.
+
+**État important :** migration ajoutée à la branche de développement uniquement. Elle n'a pas été exécutée sur le projet Supabase connecté, car celui-ci sert actuellement de backend actif et aucune branche de base de données isolée n'a été créée. Ne pas utiliser les tables avant application et tests dans un environnement isolé.
