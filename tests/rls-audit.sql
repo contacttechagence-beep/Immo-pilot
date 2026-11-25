@@ -5,7 +5,7 @@
 do $audit$
 declare
   t text;
-  expected text[] := array['agencies','agency_members','prospects','activities'];
+  expected text[] := array['agencies','agency_members','prospects','activities','properties','mandates'];
   required_policy record;
   missing_count integer;
 begin
@@ -30,7 +30,15 @@ begin
       ('activities','SELECT','Members can read activities','private.is_agency_member'),
       ('activities','INSERT','Members can create activities','private.is_agency_member'),
       ('activities','UPDATE','Members can update activities','private.is_agency_member'),
-      ('activities','DELETE','Members can delete activities','private.is_agency_member')
+      ('activities','DELETE','Members can delete activities','private.is_agency_member'),
+      ('properties','SELECT','Members can read properties','private.is_agency_member'),
+      ('properties','INSERT','Members can create properties','private.is_agency_member'),
+      ('properties','UPDATE','Members can update properties','private.is_agency_member'),
+      ('properties','DELETE','Members can delete properties','private.is_agency_member'),
+      ('mandates','SELECT','Members can read mandates','private.is_agency_member'),
+      ('mandates','INSERT','Members can create mandates','private.is_agency_member'),
+      ('mandates','UPDATE','Members can update mandates','private.is_agency_member'),
+      ('mandates','DELETE','Members can delete mandates','private.is_agency_member')
     ) as p(tablename, cmd, policyname, predicate)
   loop
     select count(*) into missing_count
@@ -52,7 +60,7 @@ begin
   if exists (
     select 1 from pg_policies p
     where p.schemaname = 'public'
-      and p.tablename in ('prospects', 'activities')
+      and p.tablename in ('prospects', 'activities', 'properties', 'mandates')
       and p.cmd = 'INSERT'
       and (
         coalesce(p.with_check, '') not like '%created_by%'
