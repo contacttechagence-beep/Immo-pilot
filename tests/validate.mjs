@@ -29,13 +29,16 @@ for (const required of ['pg_policies', 'relrowsecurity', 'private.is_agency_memb
   if (!rlsAudit.includes(required)) failures.push('tests/rls-audit.sql: contrôle de sécurité attendu absent: ' + required);
 }
 const app = readFileSync('app.html', 'utf8');
-for (const required of ['Nouveau', 'À contacter', 'En cours', 'Converti', 'Perdu', 'Historique des échanges', 'Exporter en CSV', 'Rappels et actions', 'agencySwitcher', 'selectAgency', 'agencyMemberships', 'csvCell']) {
+for (const required of ['Nouveau', 'À contacter', 'En cours', 'Converti', 'Perdu', 'Historique des échanges', 'Exporter en CSV', 'Rappels et actions', 'agencySwitcher', 'selectAgency', 'agencyMemberships', 'csvCell', 'calendarGrid', 'calendarMonth', 'renderCalendar']) {
   if (!app.includes(required)) failures.push('app.html: élément fonctionnel attendu absent: ' + required);
 }
 if (!app.includes('<option>Perdu</option>')) failures.push('app.html: statut Perdu non disponible');
 if (!app.includes('immopilot:selected-agency:')) failures.push('app.html: agence active non mémorisée par compte');
 if (!app.includes("addEventListener('change',e=>selectAgency(e.target.value))")) failures.push('app.html: sélecteur multi-agence sans gestionnaire de changement');
 if (!app.includes("if(/^\\s*[=+\\-@]/.test(text))text=\"'\"+text")) failures.push('app.html: protection CSV contre les formules de tableur absente');
+if (!app.includes("addEventListener('click',()=>{calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()-1,1);renderCalendar()})")) failures.push('app.html: navigation mois précédent absente');
+if (!app.includes("addEventListener('click',()=>{calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+1,1);renderCalendar()})")) failures.push('app.html: navigation mois suivant absente');
+if (!app.includes("data-calendar-view")) failures.push('app.html: ouverture de fiche depuis le calendrier absente');
 if (failures.length) {
   console.error('ÉCHEC DES CONTRÔLES ImmoPilot\n' + failures.map(x => '- ' + x).join('\n'));
   process.exit(1);
