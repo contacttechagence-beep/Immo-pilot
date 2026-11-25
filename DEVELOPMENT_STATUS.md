@@ -159,3 +159,10 @@ Aucune de ces étapes n'est considérée comme terminée simplement parce qu'ell
 - GitHub Actions run 45613987658 (commit `6429f96e87fcebe586135da6304e6d18654637be`) : **SUCCÈS** pour la validation HTML/JavaScript du module.
 - Le contrôle CI étendu au validateur du calendrier est en cours sur le commit `37ca5d59ef83879dd05abee16bb2df1b49ddc9c9`; attendre son résultat avant de déclarer le lot complètement validé.
 - À valider ensuite dans le navigateur sur mobile et ordinateur avec des prospects fictifs ayant des dates variées.
+
+
+## Revalidation de sécurité (2026-11-25)
+
+- Le script `tests/rls-audit.sql` a été relu depuis la branche de développement puis exécuté sur le projet Supabase connecté. Il s'est terminé sans exception; les assertions catalogue sur les quatre activations RLS, les onze politiques attendues, les contraintes INSERT/UPDATE et les fonctions privées/de création ont passé.
+- Aucun schéma, aucune politique et aucune donnée n'ont été modifiés par cet audit (bloc DO de vérification en lecture seule).
+- Les Advisors Supabase du 2026-11-25 confirment les deux alertes déjà documentées: fonction `public.create_agency(text)` SECURITY DEFINER nécessaire au parcours d'inscription, et protection des mots de passe compromis non disponible sur le plan gratuit. Deux index créés par les migrations sont signalés inutilisés sur la base de faible volume; ils ne sont pas supprimés sans mesure représentative.
