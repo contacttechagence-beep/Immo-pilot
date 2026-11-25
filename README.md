@@ -8,12 +8,15 @@ ImmoPilot est un outil en cours de conception pour aider les agences immobilièr
 - SUPABASE_SETUP.md : configuration, architecture, état des tests et limites.
 - supabase/migrations/202611220001_initial_schema.sql : schéma PostgreSQL multi-agences avec RLS.
 - supabase/migrations/202611220002_tighten_table_and_function_grants.sql : privilèges SQL minimaux pour le front.
-- supabase/migrations/202611220003_index_foreign_keys.sql : index des clés étrangères.\n- supabase/migrations/202611250001_properties_and_mandates.sql : biens immobiliers et mandats avec isolation RLS (migration en attente d'un environnement de test isolé).
+- supabase/migrations/202611220003_index_foreign_keys.sql : index des clés étrangères.
+- supabase/migrations/202611250001_properties_and_mandates.sql : biens immobiliers et mandats avec isolation RLS (migration en attente d'un environnement de test isolé).
 
 ## État actuel
 Le tableau de bord a été relié au projet Supabase ImmoPilot (région Paris). Les prospects du tableau de bord sont désormais lus et enregistrés dans PostgreSQL, et non plus dans le stockage local de démonstration. La connexion utilise une clé publishable, jamais une clé privilégiée.
 
-La vue agenda mensuelle exploite les dates de prochaine action des prospects et permet d'ouvrir directement leurs fiches, sans table ni coût supplémentaire.\n\nLe parcours Auth nécessite que les URL du site soient configurées dans Supabase → Authentication → URL Configuration. Voir SUPABASE_SETUP.md.
+La vue agenda mensuelle exploite les dates de prochaine action des prospects et permet d'ouvrir directement leurs fiches, sans table ni coût supplémentaire.
+
+Le parcours Auth nécessite que les URL du site soient configurées dans Supabase → Authentication → URL Configuration. Voir SUPABASE_SETUP.md.
 
 Ce dépôt public et le backend restent un prototype. L'isolation entre deux agences n'a pas encore été validée par des tests de bout en bout. Un avertissement Supabase concerne la fonction create_agency() en SECURITY DEFINER ; des index de clés étrangères restent à optimiser.
 
