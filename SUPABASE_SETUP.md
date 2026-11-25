@@ -78,3 +78,44 @@ Il faut encore réaliser un test avec au moins deux comptes et deux agences fict
 La migration `202611250001_properties_and_mandates.sql` ajoute les tables `properties` et `mandates`, avec références uniques par agence, contraintes de prix/surface/statuts/dates, relation composite mandat-bien-agence, champs de traçabilité, triggers `updated_at`, index et politiques RLS SELECT/INSERT/UPDATE/DELETE. Les insertions exigent l'appartenance à l'agence et `created_by = auth.uid()`; les modifications vérifient l'agence dans USING et WITH CHECK.
 
 **État important :** migration ajoutée à la branche de développement uniquement. Elle n'a pas été exécutée sur le projet Supabase connecté, car celui-ci sert actuellement de backend actif et aucune branche de base de données isolée n'a été créée. Ne pas utiliser les tables avant application et tests dans un environnement isolé.
+
+## Environnement Supabase local gratuit
+
+Le dépôt contient maintenant une configuration locale dédiée dans `supabase/config.toml`. Elle utilise l'identifiant local `immopilot-local`, des ports locaux standards et des paramètres Auth de développement. Elle ne contient aucun secret et ne lie pas le dépôt au projet Supabase hébergé.
+
+### Prérequis sur l'ordinateur
+
+- Docker Desktop (ou un moteur compatible Docker) installé et démarré.
+- Supabase CLI v3 et ses prérequis (Node.js 20+ si installation via npx).
+- Environ 7 Go de RAM recommandés pour démarrer tous les services Supabase.
+
+### Démarrage local (depuis la racine du dépôt)
+
+```bash
+supabase --version
+supabase start
+supabase status
+supabase db reset --local
+psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f tests/local-smoke.sql
+```
+
+- Studio local : http://127.0.0.1:54323
+- API locale : http://127.0.0.1:54321
+- PostgreSQL local : localhost:54322
+- Mailpit local : http://127.0.0.1:54324
+
+La commande `db reset --local` détruit/recrée uniquement la base locale jetable, applique toutes les migrations versionnées, y compris biens/mandats, puis le test SQL contrôle les six tables, l'activation RLS, les huit politiques biens/mandats, la relation composite mandat-bien-agence et la fonction privée d'appartenance.
+
+### Arrêt
+
+```bash
+supabase stop
+```
+
+Ne jamais ajouter `--remote` à ces commandes locales. Ne pas utiliser `supabase db reset --remote` : cette commande est destructive sur la base distante. Le fichier de configuration n'inclut aucun lien de projet distant. Aucun secret du projet hébergé n'est requis.
+
+### Validation CI
+
+Le workflow `.github/workflows/supabase-local.yml` démarre une pile Supabase isolée sur GitHub Actions, applique les migrations et exécute `tests/local-smoke.sql`. Le résultat du workflow doit être vert avant de considérer la migration validée. Ce workflow utilise l'infrastructure gratuite disponible dans les quotas GitHub Actions du compte; aucun service payant n'est activé.
+
+**Limite actuelle :** ce dépôt est préparé, mais le démarrage local réel sur l'ordinateur de l'utilisateur nécessite Docker et la CLI installés sur cet ordinateur. ChatGPT/GitHub ne peut pas démarrer des conteneurs sur son téléphone Android. Le workflow CI fournit une validation automatisée sans exiger de commande sur le téléphone.
