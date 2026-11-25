@@ -198,3 +198,15 @@ Aucune de ces étapes n'est considérée comme terminée simplement parce qu'ell
 - Le projet Supabase hébergé n'a pas été modifié; aucun abonnement, branche distante ou frais supplémentaires n'a été engagés.
 - La prochaine étape est d'implémenter les écrans et opérations CRUD des biens et mandats sur la branche de développement, puis d'ajouter des tests fonctionnels et multi-agences.
 - Exécution vérifiable : https://github.com/contacttechagence-beep/Immo-pilot/actions/runs/45616659660
+
+
+## Premier écran métier — biens et mandats (2026-11-25)
+
+- Ajout dans `app.html` d'une section de gestion des biens immobiliers : liste agence, création, modification et suppression.
+- Champs couverts : référence, type, vente/location, statut, adresse, code postal, ville, surface, pièces, prix et description.
+- Ajout de la gestion des mandats : association obligatoire à un bien de la même agence, création, modification et suppression; numéro, type, statut, dates, commission et notes.
+- Les lectures sont filtrées par `agency_id`; les écritures utilisent les tables protégées par les politiques RLS de la migration dédiée. La suppression d'un bien entraîne la suppression de ses mandats associés via la clé étrangère en cascade.
+- Validateur statique étendu aux éléments du module biens/mandats.
+- GitHub Actions run **45617651631** : **SUCCÈS** (HTML, IDs uniques, syntaxe JavaScript inline et assertions de présence fonctionnelle).
+- Le module est développé sur `develop/accelerated` uniquement. Il n'est pas encore déployé sur `main` et n'a pas été testé avec une session utilisateur réelle, car les tables n'ont pas été appliquées à la base Supabase hébergée.
+- Prochaines tâches : ajouter tests d'intégration CRUD/RLS en base locale, relier les biens aux prospects/dossiers, puis développer la fiche détaillée et les documents/photos.
