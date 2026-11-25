@@ -12,6 +12,7 @@ on:
     paths:
       - 'supabase/**'
       - 'tests/local-smoke.sql'
+      - 'tests/rls-runtime.sql'
       - '.github/workflows/supabase-local.yml'
   workflow_dispatch:
 
