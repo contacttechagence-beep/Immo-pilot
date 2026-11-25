@@ -210,3 +210,20 @@ Aucune de ces étapes n'est considérée comme terminée simplement parce qu'ell
 - GitHub Actions run **45617651631** : **SUCCÈS** (HTML, IDs uniques, syntaxe JavaScript inline et assertions de présence fonctionnelle).
 - Le module est développé sur `develop/accelerated` uniquement. Il n'est pas encore déployé sur `main` et n'a pas été testé avec une session utilisateur réelle, car les tables n'ont pas été appliquées à la base Supabase hébergée.
 - Prochaines tâches : ajouter tests d'intégration CRUD/RLS en base locale, relier les biens aux prospects/dossiers, puis développer la fiche détaillée et les documents/photos.
+
+## Validation d'intégration multi-agences — biens et mandats (2026-11-25)
+
+- Ajout de `tests/rls-runtime.sql` : deux utilisateurs fictifs, deux agences isolées, biens et mandats de test créés dans une transaction annulée à la fin.
+- Le test exécute les requêtes sous le rôle `authenticated` avec les claims JWT de chaque utilisateur.
+- Vérifications réussies : visibilité limitée à l'agence autorisée; création, modification et suppression des biens et mandats de sa propre agence; refus des écritures visant l'autre agence; refus d'associer un mandat à un bien d'une autre agence.
+- Workflow GitHub Actions **45697559535** : **SUCCÈS**. La stack Supabase locale a démarré, toutes les migrations ont été appliquées, le smoke test de schéma/RLS et le test runtime multi-agences ont tous deux terminé avec succès.
+- Le contrôle statique frontend sur le même commit (workflow **45697559490**) est également **SUCCÈS**.
+- Cette validation couvre PostgreSQL/Supabase local et les politiques RLS en exécution; elle ne remplace pas encore un parcours complet dans un navigateur avec deux sessions Auth réelles.
+- Aucune migration n'a été appliquée au projet Supabase hébergé. Aucune modification de `main`, aucun déploiement en production et aucun coût supplémentaire.
+
+## Suite du développement
+
+- Étendre les tests locaux aux parcours Auth et aux liens entre prospects, biens, mandats et dossiers.
+- Développer les écrans de détail, documents/photos, tâches et rendez-vous, puis les fonctions équipe/rôles et journal d'audit.
+- Conserver les tests de migration, de validation frontend et d'isolation RLS dans CI pour chaque lot.
+- La protection Supabase contre les mots de passe compromis reste indisponible sur le plan gratuit; ne pas engager de mise à niveau payante.
