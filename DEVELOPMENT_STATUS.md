@@ -147,3 +147,15 @@ Aucune de ces étapes n'est considérée comme terminée simplement parce qu'ell
 - Le validateur statique vérifie la présence de cette protection et le JavaScript intégré.
 - GitHub Actions run 45253233507 (commit `83bec768b8aa0500ef802db7db1b35355d73a0b8`) : **SUCCÈS**.
 - La correction est uniquement sur `develop/accelerated`; l'export de la version publiée sur `main` reste inchangé tant que la validation complète n'est pas terminée.
+
+
+## Agenda mensuel des actions CRM (2026-11-25)
+
+- Ajout sur `develop/accelerated` d'une vue calendrier mensuelle des prochaines actions à partir du champ existant `prospects.next_action_at`.
+- Navigation mois précédent/suivant, mise en évidence de la date du jour, repérage des dates hors mois, aperçu de deux prospects par jour et indication du nombre d'actions supplémentaires.
+- Un clic sur un prospect ouvre sa fiche CRM existante. Les actions sont filtrées sur l'agence active et les statuts clôturés (Converti/Perdu) ne sont pas affichés comme actions à faire.
+- Aucun changement de schéma ni de données Supabase; aucun coût supplémentaire. La vue est alimentée par les prospects déjà chargés et suit le changement d'agence.
+- Ajout de contrôles statiques CI pour les éléments du calendrier, la navigation et l'ouverture des fiches.
+- GitHub Actions run 45613987658 (commit `6429f96e87fcebe586135da6304e6d18654637be`) : **SUCCÈS** pour la validation HTML/JavaScript du module.
+- Le contrôle CI étendu au validateur du calendrier est en cours sur le commit `37ca5d59ef83879dd05abee16bb2df1b49ddc9c9`; attendre son résultat avant de déclarer le lot complètement validé.
+- À valider ensuite dans le navigateur sur mobile et ordinateur avec des prospects fictifs ayant des dates variées.
