@@ -40,6 +40,17 @@ begin
     raise exception 'Agency member could not create own-agency property';
   end if;
 
+  insert into public.mandates(agency_id,property_id,mandate_type,mandate_number)
+  values ('20000000-0000-4000-8000-000000000001','30000000-0000-4000-8000-000000000001','Exclusif','MAND-A2');
+  update public.mandates set notes='Test de mise à jour' where mandate_number='MAND-A2';
+  if not exists (select 1 from public.mandates where mandate_number='MAND-A2' and notes='Test de mise à jour') then
+    raise exception 'Agency member could not create/update own-agency mandate';
+  end if;
+  delete from public.mandates where mandate_number='MAND-A2';
+  if exists (select 1 from public.mandates where mandate_number='MAND-A2') then
+    raise exception 'Agency member could not delete own-agency mandate';
+  end if;
+
   update public.properties set city='Paris' where id='30000000-0000-4000-8000-000000000001';
   if not exists (select 1 from public.properties where id='30000000-0000-4000-8000-000000000001' and city='Paris') then
     raise exception 'Agency member could not update own-agency property';
