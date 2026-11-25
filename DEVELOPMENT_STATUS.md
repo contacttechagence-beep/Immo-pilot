@@ -166,3 +166,14 @@ Aucune de ces étapes n'est considérée comme terminée simplement parce qu'ell
 - Le script `tests/rls-audit.sql` a été relu depuis la branche de développement puis exécuté sur le projet Supabase connecté. Il s'est terminé sans exception; les assertions catalogue sur les quatre activations RLS, les onze politiques attendues, les contraintes INSERT/UPDATE et les fonctions privées/de création ont passé.
 - Aucun schéma, aucune politique et aucune donnée n'ont été modifiés par cet audit (bloc DO de vérification en lecture seule).
 - Les Advisors Supabase du 2026-11-25 confirment les deux alertes déjà documentées: fonction `public.create_agency(text)` SECURITY DEFINER nécessaire au parcours d'inscription, et protection des mots de passe compromis non disponible sur le plan gratuit. Deux index créés par les migrations sont signalés inutilisés sur la base de faible volume; ils ne sont pas supprimés sans mesure représentative.
+
+
+## Lot immobilier — schéma biens et mandats préparé (2026-11-25)
+
+- Nouvelle migration versionnée : `supabase/migrations/202611250001_properties_and_mandates.sql`.
+- Table `properties`: référence unique par agence, type de bien, vente/location, adresse, code postal, ville, surface, pièces, prix, statut, description et traçabilité.
+- Table `mandates`: lien composite vers un bien de la même agence, type et numéro de mandat uniques par agence, statut, dates, commission et notes.
+- Les deux tables ont RLS activé, quatre politiques CRUD par appartenance à l'agence, contrôle du créateur à l'insertion, contraintes de cohérence, index et trigger de mise à jour.
+- Le script `tests/rls-audit.sql` et le validateur CI ont été étendus pour contrôler la présence de cette migration et ses politiques.
+- Aucun changement n'a été appliqué à Supabase : l'environnement disponible est celui du prototype actif, pas une base de test isolée. Aucune table nouvelle n'est donc encore présente en production.
+- Étape restante avant écran applicatif : provisionner un environnement de développement sans frais supplémentaires, y appliquer la migration, exécuter l'audit RLS et des tests multi-agences, puis construire les écrans biens/mandats et les formulaires.
