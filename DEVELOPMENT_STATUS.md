@@ -187,3 +187,14 @@ Aucune de ces étapes n'est considérée comme terminée simplement parce qu'ell
 - Documentation des prérequis et commandes dans `SUPABASE_SETUP.md`. Le lancement local sur le poste utilisateur nécessite Docker et la CLI; impossible de démarrer des conteneurs depuis l'environnement ChatGPT mobile.
 - Workflow local CI #45616576476 en cours au moment de cette note; ne pas déclarer la migration validée avant son résultat final.
 - Sécurité opérationnelle : ne pas ajouter de `--remote`, ne pas utiliser `db reset --remote`, ne pas relier la base de test à la production.
+
+
+## Validation de l'environnement Supabase local isolé (2026-11-25)
+
+- GitHub Actions run **45616659660** : **SUCCÈS**. Le job `local-supabase` a terminé toutes ses étapes.
+- Supabase CLI v3 a démarré une stack locale jetable sur le runner GitHub; toutes les migrations du dépôt ont été appliquées avec `supabase db reset --local`.
+- Le smoke test SQL s'est exécuté avec succès : six tables attendues, RLS sur les six tables, huit politiques CRUD biens/mandats, clé étrangère composite mandat/bien/agence et fonction privée d'appartenance.
+- Cela valide la syntaxe et l'application des migrations dans un environnement PostgreSQL/Supabase local isolé. Cela ne prouve pas encore le parcours navigateur complet ni les tests RLS multi-sessions sur les nouveaux modules.
+- Le projet Supabase hébergé n'a pas été modifié; aucun abonnement, branche distante ou frais supplémentaires n'a été engagés.
+- La prochaine étape est d'implémenter les écrans et opérations CRUD des biens et mandats sur la branche de développement, puis d'ajouter des tests fonctionnels et multi-agences.
+- Exécution vérifiable : https://github.com/contacttechagence-beep/Immo-pilot/actions/runs/45616659660
