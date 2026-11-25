@@ -177,3 +177,13 @@ Aucune de ces étapes n'est considérée comme terminée simplement parce qu'ell
 - Le script `tests/rls-audit.sql` et le validateur CI ont été étendus pour contrôler la présence de cette migration et ses politiques.
 - Aucun changement n'a été appliqué à Supabase : l'environnement disponible est celui du prototype actif, pas une base de test isolée. Aucune table nouvelle n'est donc encore présente en production.
 - Étape restante avant écran applicatif : provisionner un environnement de développement sans frais supplémentaires, y appliquer la migration, exécuter l'audit RLS et des tests multi-agences, puis construire les écrans biens/mandats et les formulaires.
+
+
+## Préparation environnement Supabase local gratuit (2026-11-25)
+
+- Ajout de `supabase/config.toml` avec projet local isolé `immopilot-local`, ports locaux dédiés et Auth de développement; aucun secret ni identifiant de projet distant.
+- Ajout de `tests/local-smoke.sql` pour vérifier les six tables, RLS sur chacune, huit politiques CRUD biens/mandats, la clé étrangère composite mandat/bien/agence et la fonction privée d'appartenance.
+- Ajout de `.github/workflows/supabase-local.yml` : lance Supabase CLI v3 sur runner GitHub isolé, applique les migrations via `supabase db reset --local`, puis exécute le smoke test SQL via psql. Le test ne cible pas le projet hébergé.
+- Documentation des prérequis et commandes dans `SUPABASE_SETUP.md`. Le lancement local sur le poste utilisateur nécessite Docker et la CLI; impossible de démarrer des conteneurs depuis l'environnement ChatGPT mobile.
+- Workflow local CI #45616576476 en cours au moment de cette note; ne pas déclarer la migration validée avant son résultat final.
+- Sécurité opérationnelle : ne pas ajouter de `--remote`, ne pas utiliser `db reset --remote`, ne pas relier la base de test à la production.
