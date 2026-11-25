@@ -1,26 +1,40 @@
 # ImmoPilot — prototype SaaS
 
-ImmoPilot est un outil en cours de conception pour aider les agences immobilières à structurer les demandes entrantes, qualifier les prospects et suivre les prochaines actions.
+ImmoPilot est un logiciel en cours de développement pour les agences immobilières : gestion des prospects, qualification, priorisation, historique des échanges et suivi des prochaines actions.
 
-## Contenu
-- index.html : page de présentation et démonstration interactive de qualification par règles simples.
-- app.html : tableau de bord connecté à Supabase Auth et PostgreSQL : création de compte, connexion, récupération de mot de passe, création initiale d'agence, gestion des prospects, export CSV, score indicatif de complétude sur 100 points et priorité de suivi calculée par règles.
-- SUPABASE_SETUP.md : configuration, architecture, état des tests et limites.
-- supabase/migrations/202611220001_initial_schema.sql : schéma PostgreSQL multi-agences avec RLS.
-- supabase/migrations/202611220002_tighten_table_and_function_grants.sql : privilèges SQL minimaux pour le front.
-- supabase/migrations/202611220003_index_foreign_keys.sql : index des clés étrangères.
+## Application et architecture actuelles
 
-## État actuel
-Le tableau de bord a été relié au projet Supabase ImmoPilot (région Paris). Les prospects du tableau de bord sont désormais lus et enregistrés dans PostgreSQL, et non plus dans le stockage local de démonstration. La connexion utilise une clé publishable, jamais une clé privilégiée.
+- Site public et démonstration : `index.html`.
+- Espace connecté : `app.html`, publié via GitHub Pages.
+- Backend : Supabase Auth + PostgreSQL, projet ImmoPilot en région UE (Paris, `eu-west-3`).
+- Tables métier : `agencies`, `agency_members`, `prospects`, `activities`.
+- Authentification : inscription, connexion, déconnexion et récupération de mot de passe.
+- Gestion des agences : appartenance multi-agences et sélection de l'agence active.
+- Prospects : création, consultation, modification, suppression, recherche, filtres et export CSV.
+- Qualification et priorité : score indicatif sur 100, informations manquantes et recommandations commerciales basées sur des règles.
+- Historique : appels, e-mails, rendez-vous, notes et changements de statut.
+- Rappels : prochaines actions, retards et échéances.
+- Le navigateur utilise une clé publishable. Aucune clé `service_role` ou clé secrète ne doit être exposée dans le dépôt.
 
-Le parcours Auth nécessite que les URL du site soient configurées dans Supabase → Authentication → URL Configuration. Voir SUPABASE_SETUP.md.
+## Contrôles techniques effectués le 25 novembre 2026
 
-Ce dépôt public et le backend restent un prototype. L'isolation entre deux agences n'a pas encore été validée par des tests de bout en bout. Un avertissement Supabase concerne la fonction create_agency() en SECURITY DEFINER ; des index de clés étrangères restent à optimiser.
+- Projet Supabase : état `ACTIVE_HEALTHY`, PostgreSQL 17.
+- Les quatre tables métier existent et ont toutes RLS activé.
+- Trois migrations sont présentes dans la base et dans le dépôt.
+- Les politiques RLS limitent les lectures et écritures aux membres de l'agence concernée.
+- La fonction `public.create_agency(text)` est une fonction `SECURITY DEFINER` nécessaire à la création initiale d'une agence. Elle vérifie la session authentifiée et utilise un `search_path` vide. Vérification des privilèges : exécution refusée à `anon` et à `PUBLIC`, autorisée à `authenticated`. L'avertissement Advisor concernant l'exécution par les utilisateurs connectés est donc à traiter comme une fonction privilégiée volontaire, à surveiller et à auditer, pas comme une permission anonyme.
+- L'Advisor signale que la protection contre les mots de passe compromis est désactivée : ce réglage doit être activé dans Supabase Auth avant un pilote réel.
+- Deux index sont signalés « inutilisés ». C'est cohérent avec une base de test de faible volume ; ne pas les supprimer sans mesure sur des données de test représentatives.
+- Les contrôles SQL de structure et de privilèges ne remplacent pas un test de bout en bout avec deux comptes distincts et des agences distinctes.
+
+## Limites — ne pas utiliser avec de vrais prospects
+
+ImmoPilot reste un prototype. Les modules CRM avancés, biens/mandats, documents, organisation, équipes et invitations, IA sécurisée, intégrations, statistiques, facturation SaaS et fonctions d'administration restent à développer. La conformité RGPD, la conservation et suppression des données, les sauvegardes/restaurations, la supervision et les procédures d'incident doivent être finalisées avant toute exploitation commerciale.
+
+**Utiliser uniquement des comptes et données fictifs pour les essais. Ne pas importer de données de vrais clients avant validation de la sécurité et du cadre RGPD.**
 
 ## Publication
-Le site est publié via GitHub Pages. Le tableau de bord se trouve dans app.html.
 
-## Sécurité
-Ne jamais ajouter de clé service_role, de clé secrète, de mot de passe, de jeton privé ou de données personnelles à ce dépôt public. Les clés publishable sont destinées au navigateur, à condition que les politiques RLS soient correctes.
+Application : https://contacttechagence-beep.github.io/Immo-pilot/app.html
 
-**Ne pas utiliser avec de vrais prospects clients tant que les tests d'isolation, l'audit de sécurité et la validation RGPD ne sont pas terminés.** Toute future intégration IA devra passer par un serveur et une variable d'environnement secrète.
+Dépôt : https://github.com/contacttechagence-beep/Immo-pilot
