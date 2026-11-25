@@ -41,6 +41,7 @@ const app = readFileSync('app.html', 'utf8');
 for (const required of ['Nouveau', 'À contacter', 'En cours', 'Converti', 'Perdu', 'Historique des échanges', 'Exporter en CSV', 'Rappels et actions', 'agencySwitcher', 'selectAgency', 'agencyMemberships', 'csvCell', 'calendarGrid', 'calendarMonth', 'renderCalendar']) {
   if (!app.includes(required)) failures.push('app.html: élément fonctionnel attendu absent: ' + required);
 }
+for (const required of ['properties','mandates','loadProperties','renderProperties','openProperty','openMandate','propertyForm','mandateForm','addPropertyBtn','addMandateBtn','data-property-edit','data-property-delete','data-mandate-edit','data-mandate-delete']) { if (!app.includes(required)) failures.push('app.html: module biens/mandats incomplet: ' + required); }
 if (!app.includes('<option>Perdu</option>')) failures.push('app.html: statut Perdu non disponible');
 if (!app.includes('immopilot:selected-agency:')) failures.push('app.html: agence active non mémorisée par compte');
 if (!app.includes("addEventListener('change',e=>selectAgency(e.target.value))")) failures.push('app.html: sélecteur multi-agence sans gestionnaire de changement');
