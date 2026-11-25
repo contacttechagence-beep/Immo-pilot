@@ -1,0 +1,36 @@
+name: Supabase local migration tests
+
+on:
+  push:
+    branches: [develop/accelerated]
+    paths:
+      - 'supabase/**'
+      - 'tests/local-smoke.sql'
+      - '.github/workflows/supabase-local.yml'
+  pull_request:
+    paths:
+      - 'supabase/**'
+      - 'tests/local-smoke.sql'
+      - '.github/workflows/supabase-local.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  local-supabase:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v3
+        with:
+          version: latest
+      - name: Show CLI version
+        run: supabase --version
+      - name: Start isolated local Supabase stack
+        run: supabase start
+      - name: Apply all migrations to disposable local database
+        run: supabase db reset --local
+      - name: Verify schema and RLS policies
+        run: psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f tests/local-smoke.sql
