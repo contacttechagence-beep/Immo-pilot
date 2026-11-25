@@ -28,6 +28,8 @@ jobs:
           version: latest
       - name: Show CLI version
         run: supabase --version
+      - name: Confirm local-only SMTP configuration
+        run: grep -q '^\\[local_smtp\\]' supabase/config.toml
       - name: Start isolated local Supabase stack
         run: supabase start
       - name: Apply all migrations to disposable local database
