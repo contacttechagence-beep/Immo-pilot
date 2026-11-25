@@ -28,6 +28,15 @@ const rlsAudit = readFileSync('tests/rls-audit.sql', 'utf8');
 for (const required of ['pg_policies', 'relrowsecurity', 'private.is_agency_member', 'public.create_agency', 'auth.uid()', 'does not replace multi-user runtime isolation tests', 'created_by', 'Agency UPDATE policy', 'WITH CHECK']) {
   if (!rlsAudit.includes(required)) failures.push('tests/rls-audit.sql: contrôle de sécurité attendu absent: ' + required);
 }
+const propertyMigration = readFileSync('supabase/migrations/202611250001_properties_and_mandates.sql', 'utf8');
+for (const required of ['create table if not exists public.properties', 'create table if not exists public.mandates', 'private.is_agency_member(agency_id)', 'created_by = (select auth.uid())', 'enable row level security', 'mandates_property_agency_fk', 'properties_set_updated_at', 'mandates_set_updated_at', 'revoke all on public.properties, public.mandates from anon, authenticated']) {
+  if (!propertyMigration.includes(required)) failures.push('migration biens/mandats: contrôle attendu absent: ' + required);
+}
+for (const table of ['properties', 'mandates']) {
+  for (const action of ['read', 'create', 'update', 'delete']) {
+    if (!propertyMigration.includes('Members can ' + action + ' ' + table)) failures.push('migration biens/mandats: politique RLS absente: ' + table + ' ' + action);
+  }
+}
 const app = readFileSync('app.html', 'utf8');
 for (const required of ['Nouveau', 'À contacter', 'En cours', 'Converti', 'Perdu', 'Historique des échanges', 'Exporter en CSV', 'Rappels et actions', 'agencySwitcher', 'selectAgency', 'agencyMemberships', 'csvCell', 'calendarGrid', 'calendarMonth', 'renderCalendar']) {
   if (!app.includes(required)) failures.push('app.html: élément fonctionnel attendu absent: ' + required);
