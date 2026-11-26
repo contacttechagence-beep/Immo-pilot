@@ -27,6 +27,15 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 - Deux index sont signalés « inutilisés ». C'est cohérent avec une base de test de faible volume ; ne pas les supprimer sans mesure sur des données de test représentatives.
 - Les contrôles SQL de structure et de privilèges ne remplacent pas un test de bout en bout avec deux comptes distincts et des agences distinctes.
 
+## Vérifications de la nouvelle phase — 26 novembre 2026
+
+- Syntaxe JavaScript de l'application vérifiée.
+- Test transactionnel sous rôle `authenticated` : création d'un contact, d'un bien, d'un mandat et d'une tâche réussie ; transaction annulée ensuite, aucune donnée de test conservée.
+- Test d'isolation entre deux utilisateurs appartenant à des agences distinctes : le second utilisateur ne voit aucune ligne du contact de test (`0` ligne visible).
+- Les quatre nouvelles tables ont RLS activé ; `authenticated` dispose des privilèges attendus et `anon` n'a pas de droit SELECT.
+- Advisor : aucun problème de santé et aucune clé étrangère non indexée signalée. Les index marqués inutilisés sont normaux sur une base de faible volume.
+- Deux avertissements de sécurité préexistants restent à traiter : la fonction de création d'agence `SECURITY DEFINER` volontairement exécutable par les comptes connectés, et la protection contre les mots de passe compromis désactivée.
+
 ## Limites — ne pas utiliser avec de vrais prospects
 
 ImmoPilot reste un prototype. Les modules documents, agenda avancé, équipes/invitations et rôles fins, IA sécurisée, intégrations, statistiques avancées, facturation SaaS et administration restent à développer. La conformité RGPD, la conservation et suppression des données, les sauvegardes/restaurations, la supervision et les procédures d'incident doivent être finalisées avant toute exploitation commerciale.
