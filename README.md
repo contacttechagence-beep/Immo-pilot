@@ -21,7 +21,7 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 
 - Projet Supabase : état `ACTIVE_HEALTHY`, PostgreSQL 17.
 - Les quatre tables métier existent et ont toutes RLS activé.
-- Huit migrations sont présentes dans la base et dans le dépôt.
+- Neuf migrations sont présentes dans la base et dans le dépôt.
 - Les politiques RLS limitent les lectures et écritures aux membres de l'agence concernée.
 - La fonction `public.create_agency(text)` est une fonction `SECURITY DEFINER` nécessaire à la création initiale d'une agence. Elle vérifie la session authentifiée et utilise un `search_path` vide. Vérification des privilèges : exécution refusée à `anon` et à `PUBLIC`, autorisée à `authenticated`. L'avertissement Advisor concernant l'exécution par les utilisateurs connectés est donc à traiter comme une fonction privilégiée volontaire, à surveiller et à auditer, pas comme une permission anonyme.
 - L'Advisor signale que la protection contre les mots de passe compromis est désactivée : ce réglage doit être activé dans Supabase Auth avant un pilote réel.
@@ -43,7 +43,9 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 - Bucket `immopilot-documents` privé, taille maximale configurée à 20 Mo et liste MIME autorisée.
 - Politiques Storage `SELECT`, `INSERT` et `DELETE` basées sur le premier dossier du chemin (`agency_id`) et l'appartenance au même espace agence.
 - L'interface permet le dépôt, le classement, le téléchargement et la suppression. Aucun lien public n'est généré.
-- La validation de bout en bout d'un véritable transfert de fichier et un test d'isolation Storage avec deux comptes restent à effectuer dans le navigateur.
+- Test transactionnel RLS simulé avec deux comptes : le membre de l'agence voit la fiche documentaire temporaire ; le compte d'une autre agence ne la voit pas. La transaction est annulée, aucune fiche de test n'est conservée.
+- Vérification des privilèges : `authenticated` peut accéder à la table, `anon` n'a aucun droit SELECT.
+- La validation de bout en bout d'un véritable transfert de fichier via navigateur et Storage avec deux comptes reste à effectuer.
 
 ## Limites — ne pas utiliser avec de vrais prospects
 
