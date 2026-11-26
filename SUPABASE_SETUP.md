@@ -49,7 +49,7 @@ Dans Authentication → URL Configuration :
 14. `20261126181152_team_member_rls_mutations.sql`
 15. `20261126181605_team_assignment_roster.sql`
 16. `20261126193332_agency_invitation_links.sql`
-17. `20261126193603_agency_invitation_direct_access_denied.sql`
+17. `20261126193623_agency_invitation_direct_access_denied.sql`
 
 La base indique seize migrations appliquées, dont les migrations d’administration de l’équipe et d’invitations.
 
