@@ -49,6 +49,7 @@ Dans Authentication → URL Configuration :
 14. `20261126181152_team_member_rls_mutations.sql`
 15. `20261126181605_team_assignment_roster.sql`
 16. `20261126193332_agency_invitation_links.sql`
+17. `20261126193603_agency_invitation_direct_access_denied.sql`
 
 La base indique seize migrations appliquées, dont les migrations d’administration de l’équipe et d’invitations.
 
@@ -128,7 +129,7 @@ https://contacttechagence-beep.github.io/Immo-pilot/app.html
 
 Migration appliquée : `20261126193332_agency_invitation_links.sql`.
 
-- Table `agency_invitations` avec RLS activé et aucun privilège direct accordé à `anon` ou `authenticated`.
+- Table `agency_invitations` avec RLS activé, une politique explicite de refus total et aucun privilège direct accordé à `anon` ou `authenticated`.
 - Le jeton aléatoire de 256 bits est généré côté PostgreSQL ; seul son condensat SHA-256 est conservé en base.
 - `create_agency_invitation(uuid,text,text)` : propriétaire peut inviter administrateur ou agent ; administrateur peut inviter agent uniquement.
 - `list_agency_invitations(uuid)` : affiche les invitations en attente aux responsables autorisés.
