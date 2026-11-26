@@ -7,7 +7,7 @@
 - Front statique : GitHub Pages, `app.html`.
 - Backend : Supabase Auth + PostgreSQL 17.
 - Projet : `zzcvvvfnkjhdhrwqbfgm`, région `eu-west-3` (Paris), état vérifié : `ACTIVE_HEALTHY`.
-- Tables : `agencies`, `agency_members`, `agency_invitations`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`, `documents`, `appointments`.
+- Tables : `agencies`, `agency_members`, `agency_invitations`, `audit_logs`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`, `documents`, `appointments`.
 - Toutes les tables métier exposées ont RLS activé, avec des politiques adaptées à l'appartenance à l'agence.
 - Les politiques métier utilisent les fonctions `private.is_agency_member` et `private.is_agency_admin` pour contrôler l'appartenance à l'agence.
 - Auth : inscription, confirmation par e-mail, connexion, déconnexion et récupération de mot de passe.
@@ -50,8 +50,10 @@ Dans Authentication → URL Configuration :
 15. `20261126181605_team_assignment_roster.sql`
 16. `20261126193332_agency_invitation_links.sql`
 17. `20261126193623_agency_invitation_direct_access_denied.sql`
+18. `20261126193930_agency_audit_trail.sql`
+19. `20261126194117_agency_audit_read_only_permissions.sql`
 
-La base indique seize migrations appliquées, dont les migrations d’administration de l’équipe et d’invitations.
+La base indique dix-huit migrations appliquées, dont les migrations d’administration de l’équipe, d’invitations et de journal d’audit.
 
 ## Audit effectué le 25 novembre 2026
 
@@ -107,7 +109,7 @@ La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit cr
 
 ## Modules restant à développer
 
-IA côté serveur, intégrations, statistiques et tableaux de bord avancés, administration SaaS et facturation, journal d'audit et sécurité renforcée.
+IA côté serveur, intégrations, statistiques et tableaux de bord avancés, administration SaaS et facturation, sécurité renforcée.
 
 Aucune fonctionnalité prévue ne doit être supprimée pour accélérer le développement. Les essais utilisent exclusivement des données fictives. Aucun test utilisateur supplémentaire ne sera demandé avant que la phase de développement prévue soit terminée.
 
@@ -140,3 +142,16 @@ Migration appliquée : `20261126193332_agency_invitation_links.sql`.
 - La page d’authentification conserve le paramètre d’invitation pendant la création du compte et traite le jeton après authentification.
 
 Les tests de flux réel avec deux comptes distincts et la validation visuelle navigateur restent à effectuer avant de déclarer le module prêt à l’usage.
+
+
+## Journal d’audit — traçabilité des opérations
+
+Migration appliquée : `20261126193930_agency_audit_trail.sql`.
+
+- Table `audit_logs` avec RLS ; lecture réservée aux propriétaires et administrateurs de l’agence ; privilège SELECT uniquement pour `authenticated`, aucune écriture directe.
+- Triggers sur prospects, historique CRM, contacts, biens, mandats, tâches, rendez-vous et documents.
+- Enregistre les créations, modifications et suppressions, l’identifiant du membre, le type d’objet et les noms des champs concernés.
+- Ne conserve jamais les valeurs précédentes ou nouvelles des champs, afin de limiter l’exposition de données personnelles.
+- Pas d’écriture directe depuis le navigateur ; la fonction de trigger privée réalise l’insertion.
+- Test transactionnel effectué sur un contact fictif : insertion, modification (champ `phone` identifié) et suppression ont généré trois événements ; transaction annulée, aucune donnée de test conservée.
+- Interface Journal réservée aux propriétaires et administrateurs, avec filtres par module et type d’action ; les 100 derniers événements sont affichés.

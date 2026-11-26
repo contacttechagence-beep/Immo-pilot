@@ -7,7 +7,7 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 - Site public et démonstration : `index.html`.
 - Espace connecté : `app.html`, publié via GitHub Pages.
 - Backend : Supabase Auth + PostgreSQL, projet ImmoPilot en région UE (Paris, `eu-west-3`).
-- Tables métier : `agencies`, `agency_members`, `agency_invitations`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`, `documents`, `appointments`.
+- Tables métier : `agencies`, `agency_members`, `agency_invitations`, `audit_logs`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`, `documents`, `appointments`.
 - Authentification : inscription, connexion, déconnexion et récupération de mot de passe.
 - Gestion des agences : appartenance multi-agences et sélection de l'agence active.
 - Prospects : création, consultation, modification, suppression, recherche, filtres et export CSV.
@@ -18,13 +18,14 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 - Agenda : calendrier mensuel, rendez-vous, visites, appels, réunions, signatures et états des lieux ; gestion des horaires, lieux, statuts, rattachement CRM et attribution aux membres.
 - Tâches : attribution à un membre de l’agence ; les affectations sont contrôlées par une clé étrangère composite agence/membre.
 - Équipe : consultation des membres, modification des rôles agent/administrateur par le propriétaire, retrait sécurisé des membres par propriétaire/administrateur, invitations par liens uniques à usage unique valables 7 jours, révocation et contrôle de l'adresse e-mail confirmée. Les liens sont partagés manuellement ; aucun service d'envoi payant n'est ajouté.
+- Journal d'audit : journalisation des créations, modifications et suppressions dans les modules CRM, documents et agenda ; accès réservé aux responsables ; aucune valeur personnelle n'est copiée dans le journal.
 - Le navigateur utilise une clé publishable. Aucune clé `service_role` ou clé secrète ne doit être exposée dans le dépôt.
 
 ## Contrôles techniques effectués le 25 novembre 2026
 
 - Projet Supabase : état `ACTIVE_HEALTHY`, PostgreSQL 17.
 - À la date du contrôle initial, les tables métier de base avaient toutes RLS activé ; les modules CRM, documents et agenda ajoutés ensuite disposent également de RLS.
-- Dix-sept migrations sont enregistrées dans la base et dans le dépôt.
+- Dix-neuf migrations sont enregistrées dans la base et dans le dépôt.
 - Les politiques RLS limitent les lectures et écritures aux membres de l'agence concernée.
 - La fonction `public.create_agency(text)` est une fonction `SECURITY DEFINER` nécessaire à la création initiale d'une agence. Elle vérifie la session authentifiée et utilise un `search_path` vide. Vérification des privilèges : exécution refusée à `anon` et à `PUBLIC`, autorisée à `authenticated`. L'avertissement Advisor concernant l'exécution par les utilisateurs connectés est donc à traiter comme une fonction privilégiée volontaire, à surveiller et à auditer, pas comme une permission anonyme.
 - L'Advisor signale que la protection contre les mots de passe compromis est désactivée : ce réglage doit être activé dans Supabase Auth avant un pilote réel.
