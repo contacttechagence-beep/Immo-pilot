@@ -67,3 +67,10 @@ ImmoPilot reste un prototype. Les modules équipes/invitations et rôles fins, I
 Application : https://contacttechagence-beep.github.io/Immo-pilot/app.html
 
 Dépôt : https://github.com/contacttechagence-beep/Immo-pilot
+
+
+## Refonte graphique Premium Luxury (26 novembre 2026)
+
+L'interface de l'espace agence adopte une identité visuelle premium : bleu nuit **#101B2D**, or **#C9A45C**, blanc cassé **#F7F8FA** et gris clair **#E8ECF1**. La navigation latérale conserve les sept modules existants (Prospects, Contacts, Biens, Mandats, Tâches, Agenda et Documents). Les cartes statistiques, tableaux, formulaires, états de focus et transitions ont été modernisés avec des adaptations mobiles et la prise en compte de `prefers-reduced-motion`.
+
+Cette refonte est limitée à la présentation HTML/CSS : aucune migration Supabase, modification de schéma, modification des règles métier ou changement des appels d'authentification et de persistance n'a été introduit. Elle est enregistrée sur la branche de développement `dev/next-suite-phase` et n'est pas publiée sur le site public.
