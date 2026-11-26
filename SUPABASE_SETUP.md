@@ -40,6 +40,7 @@ Dans Authentication → URL Configuration :
 6. `20261126144822_tasks_assignee_fk_index.sql`
 7. `20261126145057_crm_private_document_management.sql`
 8. `20261126145214_documents_uploaded_by_index.sql`
+9. `20261126145249_documents_permissions_hardening.sql`
 
 La base indique bien ces trois migrations comme appliquées.
 
@@ -83,7 +84,9 @@ La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit cr
 - Table `documents` avec RLS et droits Data API explicites ; chaque document est lié à son agence et peut être rattaché à un prospect, contact, bien ou mandat de la même agence.
 - Storage RLS : seuls les membres de l'agence peuvent déposer, lire/télécharger et supprimer les fichiers dont le chemin commence par leur `agency_id`.
 - Interface `app.html` : formulaire de dépôt, classement facultatif, liste, téléchargement authentifié et suppression.
-- À tester dans le navigateur avec un vrai fichier de test puis avec deux comptes d'agences distinctes ; aucun document de client réel ne doit être utilisé.
+- Test SQL temporaire : un membre voit son document, un utilisateur d'une autre agence voit zéro ligne ; transaction annulée.
+- Vérification des droits : `authenticated` autorisé, `anon` explicitement révoqué.
+- Le transfert réel d'un fichier via navigateur et l'isolation Storage doivent encore être testés avec un fichier fictif ; aucun document de client réel ne doit être utilisé.
 
 ## Modules restant à développer
 
