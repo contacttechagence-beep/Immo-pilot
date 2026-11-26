@@ -51,6 +51,7 @@ Dans Authentication → URL Configuration :
 16. `20261126193332_agency_invitation_links.sql`
 17. `20261126193623_agency_invitation_direct_access_denied.sql`
 18. `20261126193930_agency_audit_trail.sql`
+19. `20261126194117_agency_audit_read_only_permissions.sql`
 
 La base indique dix-huit migrations appliquées, dont les migrations d’administration de l’équipe, d’invitations et de journal d’audit.
 
@@ -147,7 +148,7 @@ Les tests de flux réel avec deux comptes distincts et la validation visuelle na
 
 Migration appliquée : `20261126193930_agency_audit_trail.sql`.
 
-- Table `audit_logs` avec RLS ; lecture réservée aux propriétaires et administrateurs de l’agence.
+- Table `audit_logs` avec RLS ; lecture réservée aux propriétaires et administrateurs de l’agence ; privilège SELECT uniquement pour `authenticated`, aucune écriture directe.
 - Triggers sur prospects, historique CRM, contacts, biens, mandats, tâches, rendez-vous et documents.
 - Enregistre les créations, modifications et suppressions, l’identifiant du membre, le type d’objet et les noms des champs concernés.
 - Ne conserve jamais les valeurs précédentes ou nouvelles des champs, afin de limiter l’exposition de données personnelles.
