@@ -7,7 +7,7 @@
 - Front statique : GitHub Pages, `app.html`.
 - Backend : Supabase Auth + PostgreSQL 17.
 - Projet : `zzcvvvfnkjhdhrwqbfgm`, région `eu-west-3` (Paris), état vérifié : `ACTIVE_HEALTHY`.
-- Tables : `agencies`, `agency_members`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`, `documents`.
+- Tables : `agencies`, `agency_members`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`, `documents`, `appointments`.
 - Les quatre tables ont RLS activé.
 - Les politiques métier utilisent les fonctions `private.is_agency_member` et `private.is_agency_admin` pour contrôler l'appartenance à l'agence.
 - Auth : inscription, confirmation par e-mail, connexion, déconnexion et récupération de mot de passe.
@@ -21,6 +21,7 @@
 - Historique des appels, e-mails, rendez-vous, notes et changements de statut.
 - Rappels des actions en retard, du jour, à venir ou à planifier.
 - Documents privés : dépôt, rattachement à un prospect/contact/bien/mandat, liste, téléchargement et suppression.
+- Agenda : calendrier mensuel, rendez-vous/visites/appels/réunions/signatures, horaires, lieux, statuts et rattachement au CRM.
 
 ## URL Auth à contrôler dans Supabase
 
@@ -41,6 +42,8 @@ Dans Authentication → URL Configuration :
 7. `20261126145057_crm_private_document_management.sql`
 8. `20261126145214_documents_uploaded_by_index.sql`
 9. `20261126145249_documents_permissions_hardening.sql`
+10. `20261126152712_crm_calendar_appointments.sql`
+11. `20261126152833_appointments_created_by_index.sql`
 
 La base indique bien ces trois migrations comme appliquées.
 
@@ -78,6 +81,14 @@ La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit cr
 - `tasks` : tâches datées et priorisées, rattachées à un prospect, un contact ou un bien ; l'affectation est limitée à un membre de l'agence.
 - Les quatre nouvelles tables ont RLS activé, des politiques membres d'agence et des privilèges Data API explicites. Les clés étrangères entre entités incluent l'agence pour empêcher les liens inter-agences.
 
+## Agenda — module développé le 26 novembre 2026
+
+- Table `appointments` : rendez-vous, visites, appels, réunions, états des lieux et signatures ; début/fin, lieu, statut, description, responsable.
+- Calendrier mensuel interactif : navigation mois précédent/suivant, retour à aujourd'hui, sélection d'un jour et affichage du programme du jour.
+- Formulaire de création/modification et suppression ; horaires locaux convertis en timestamps avec fuseau (`timestamptz`).
+- RLS agence et contrôle que le responsable appartient à la même agence ; les liens prospect/contact/bien sont protégés contre les références inter-agences.
+- Tests de structure et de privilèges réussis ; `authenticated` autorisé, `anon` refusé. Aucun rendez-vous de test conservé.
+
 ## Documents — module développé le 26 novembre 2026
 
 - Bucket `immopilot-documents` privé (jamais public), limite de 20 Mo par fichier et types MIME restreints.
@@ -90,7 +101,7 @@ La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit cr
 
 ## Modules restant à développer
 
-Documents et stockage, agenda avancé, équipes/invitations/rôles fins, IA côté serveur, intégrations, statistiques et tableaux de bord avancés, administration SaaS et facturation, journal d'audit et sécurité renforcée.
+Équipes/invitations/rôles fins, IA côté serveur, intégrations, statistiques et tableaux de bord avancés, administration SaaS et facturation, journal d'audit et sécurité renforcée.
 
 Aucune fonctionnalité prévue ne doit être supprimée pour accélérer le développement. Les essais utilisent exclusivement des données fictives. Aucun test utilisateur supplémentaire ne sera demandé avant que la phase de développement prévue soit terminée.
 
