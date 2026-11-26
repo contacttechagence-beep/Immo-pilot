@@ -7,7 +7,7 @@
 - Front statique : GitHub Pages, `app.html`.
 - Backend : Supabase Auth + PostgreSQL 17.
 - Projet : `zzcvvvfnkjhdhrwqbfgm`, région `eu-west-3` (Paris), état vérifié : `ACTIVE_HEALTHY`.
-- Tables : `agencies`, `agency_members`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`, `documents`, `appointments`.
+- Tables : `agencies`, `agency_members`, `agency_invitations`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`, `documents`, `appointments`.
 - Toutes les tables métier exposées ont RLS activé, avec des politiques adaptées à l'appartenance à l'agence.
 - Les politiques métier utilisent les fonctions `private.is_agency_member` et `private.is_agency_admin` pour contrôler l'appartenance à l'agence.
 - Auth : inscription, confirmation par e-mail, connexion, déconnexion et récupération de mot de passe.
@@ -49,7 +49,7 @@ Dans Authentication → URL Configuration :
 14. `20261126181152_team_member_rls_mutations.sql`
 15. `20261126181605_team_assignment_roster.sql`
 
-La base indique quinze migrations appliquées, dont les deux migrations d’administration de l’équipe.
+La base indique seize migrations appliquées, dont les migrations d’administration de l’équipe et d’invitations.
 
 ## Audit effectué le 25 novembre 2026
 
@@ -105,7 +105,7 @@ La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit cr
 
 ## Modules restant à développer
 
-Invitations sécurisées par e-mail, IA côté serveur, intégrations, statistiques et tableaux de bord avancés, administration SaaS et facturation, journal d'audit et sécurité renforcée.
+IA côté serveur, intégrations, statistiques et tableaux de bord avancés, administration SaaS et facturation, journal d'audit et sécurité renforcée.
 
 Aucune fonctionnalité prévue ne doit être supprimée pour accélérer le développement. Les essais utilisent exclusivement des données fictives. Aucun test utilisateur supplémentaire ne sera demandé avant que la phase de développement prévue soit terminée.
 
@@ -116,8 +116,25 @@ Aucune fonctionnalité prévue ne doit être supprimée pour accélérer le dév
 - `remove_agency_member(uuid, uuid)` : propriétaire peut retirer admin/agent ; administrateur peut retirer agent ; auto-retrait et retrait du propriétaire interdits.
 - Fonctions `SECURITY DEFINER`, `search_path` vide, exécution révoquée à `PUBLIC` et `anon`, accordée uniquement à `authenticated` ; contrôle du rôle effectué dans la fonction.
 - La liste et les actions sont exposées dans l’onglet Équipe pour les comptes propriétaire/administrateur.
-- Invitations par e-mail non activées : une fonction serveur avec Admin Auth et un service d’envoi doit être déployée avant cette étape.
+- Les invitations par e-mail automatique ne sont pas activées. Les liens d’invitation sécurisés sont créés dans l’application et doivent être partagés manuellement ; aucun fournisseur d’envoi n’est requis.
 
 ## Application
 
 https://contacttechagence-beep.github.io/Immo-pilot/app.html
+
+
+## Invitations d’équipe — liens sécurisés
+
+Migration appliquée : `20261126193332_agency_invitation_links.sql`.
+
+- Table `agency_invitations` avec RLS activé et aucun privilège direct accordé à `anon` ou `authenticated`.
+- Le jeton aléatoire de 256 bits est généré côté PostgreSQL ; seul son condensat SHA-256 est conservé en base.
+- `create_agency_invitation(uuid,text,text)` : propriétaire peut inviter administrateur ou agent ; administrateur peut inviter agent uniquement.
+- `list_agency_invitations(uuid)` : affiche les invitations en attente aux responsables autorisés.
+- `revoke_agency_invitation(uuid,uuid)` : invalide immédiatement un lien non utilisé.
+- `accept_agency_invitation(text)` : accepte une seule fois, avant expiration, uniquement si l’utilisateur connecté a confirmé exactement l’adresse e-mail invitée.
+- Les liens expirent après 7 jours. Les invitations précédentes pour la même adresse sont révoquées lors de la création d’un nouveau lien.
+- L’interface permet de créer, copier et révoquer les liens. Aucun e-mail automatique n’est envoyé ; le partage s’effectue avec la messagerie habituelle.
+- La page d’authentification conserve le paramètre d’invitation pendant la création du compte et traite le jeton après authentification.
+
+Les tests de flux réel avec deux comptes distincts et la validation visuelle navigateur restent à effectuer avant de déclarer le module prêt à l’usage.
