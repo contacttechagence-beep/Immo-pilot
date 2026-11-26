@@ -8,7 +8,7 @@
 - Backend : Supabase Auth + PostgreSQL 17.
 - Projet : `zzcvvvfnkjhdhrwqbfgm`, région `eu-west-3` (Paris), état vérifié : `ACTIVE_HEALTHY`.
 - Tables : `agencies`, `agency_members`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`, `documents`, `appointments`.
-- Les quatre tables ont RLS activé.
+- Toutes les tables métier exposées ont RLS activé, avec des politiques adaptées à l'appartenance à l'agence.
 - Les politiques métier utilisent les fonctions `private.is_agency_member` et `private.is_agency_admin` pour contrôler l'appartenance à l'agence.
 - Auth : inscription, confirmation par e-mail, connexion, déconnexion et récupération de mot de passe.
 - Le front utilise une clé publishable. Ne jamais placer de clé secrète ou `service_role` dans le navigateur ou dans ce dépôt public.
@@ -45,7 +45,7 @@ Dans Authentication → URL Configuration :
 10. `20261126152712_crm_calendar_appointments.sql`
 11. `20261126152833_appointments_created_by_index.sql`
 
-La base indique bien ces trois migrations comme appliquées.
+La base indique les onze migrations listées comme appliquées.
 
 ## Audit effectué le 25 novembre 2026
 
@@ -79,7 +79,7 @@ La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit cr
 - `properties` : portefeuille des biens, références uniques par agence, localisation, caractéristiques, prix et statut.
 - `mandates` : mandat lié à un bien et à un propriétaire de la même agence, type, dates, honoraires et statut.
 - `tasks` : tâches datées et priorisées, rattachées à un prospect, un contact ou un bien ; l'affectation est limitée à un membre de l'agence.
-- Les quatre nouvelles tables ont RLS activé, des politiques membres d'agence et des privilèges Data API explicites. Les clés étrangères entre entités incluent l'agence pour empêcher les liens inter-agences.
+- Les tables CRM ajoutées ont RLS activé, des politiques membres d'agence et des privilèges Data API explicites. Les clés étrangères entre entités incluent l'agence pour empêcher les liens inter-agences.
 
 ## Agenda — module développé le 26 novembre 2026
 
