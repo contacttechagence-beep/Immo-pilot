@@ -160,7 +160,7 @@ function openModuleForm(table,item=null){
   fields+=fieldHtml('Intitulé','title','text',x.title||'',null,true,true)+fieldHtml('Échéance','due_at','datetime-local',dt)+fieldHtml('Priorité','priority','text',x.priority||'Normale',optionList(['Basse','Normale','Haute','Urgente'].map(v=>({v,t:v})),'v',z=>z.t))+fieldHtml('Statut','status','text',x.status||'À faire',optionList(['À faire','En cours','Terminée','Annulée'].map(v=>({v,t:v})),'v',z=>z.t))+fieldHtml('Prospect lié','prospect_id','text',x.prospect_id||'',optionList(prospects,'id',z=>z.name))+fieldHtml('Contact lié','contact_id','text',x.contact_id||'',optionList(moduleData.contacts,'id',z=>z.first_name+' '+z.last_name))+fieldHtml('Bien lié','property_id','text',x.property_id||'',optionList(moduleData.properties,'id',z=>z.reference+' · '+z.title))+fieldHtml('Description','description','textarea',x.description||'',null,true);
  }
  el('moduleFormTitle').textContent=(item?'Modifier ':'Ajouter ')+({contacts:'un contact',properties:'un bien',mandates:'un mandat',tasks:'une tâche',appointments:'un rendez-vous'}[table]);
- el('moduleForm').dataset.table=table;el('moduleFormFields').innerHTML=fields;el('moduleFormFields').dataset.table=table;el('moduleModal').classList.add('open');
+ el('moduleForm').dataset.table=table;el('moduleFormFields').innerHTML=fields;el('moduleFormFields').dataset.table=table;el('moduleFormFields').querySelectorAll('select').forEach(s=>{const key=s.id.slice(3);if(x[key]!==undefined&&x[key]!==null)s.value=String(x[key])});el('moduleModal').classList.add('open');
 }
 async function submitModuleForm(e){
  e.preventDefault();const table=el('moduleForm').dataset.table;const get=k=>el('mf_'+k)?.value??null;let payload={agency_id:agencyId};
