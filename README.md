@@ -23,7 +23,7 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 
 - Projet Supabase : état `ACTIVE_HEALTHY`, PostgreSQL 17.
 - À la date du contrôle initial, les tables métier de base avaient toutes RLS activé ; les modules CRM, documents et agenda ajoutés ensuite disposent également de RLS.
-- Treize migrations sont enregistrées dans la base et dans le dépôt.
+- Quatorze migrations sont enregistrées dans la base et dans le dépôt.
 - Les politiques RLS limitent les lectures et écritures aux membres de l'agence concernée.
 - La fonction `public.create_agency(text)` est une fonction `SECURITY DEFINER` nécessaire à la création initiale d'une agence. Elle vérifie la session authentifiée et utilise un `search_path` vide. Vérification des privilèges : exécution refusée à `anon` et à `PUBLIC`, autorisée à `authenticated`. L'avertissement Advisor concernant l'exécution par les utilisateurs connectés est donc à traiter comme une fonction privilégiée volontaire, à surveiller et à auditer, pas comme une permission anonyme.
 - L'Advisor signale que la protection contre les mots de passe compromis est désactivée : ce réglage doit être activé dans Supabase Auth avant un pilote réel.
@@ -64,6 +64,7 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 - RPC `remove_agency_member` : le propriétaire peut retirer les administrateurs et agents ; un administrateur peut retirer les agents ; personne ne peut retirer le propriétaire ou son propre accès.
 - Les trois fonctions sont `SECURITY DEFINER`, utilisent `search_path` vide, et sont explicitement interdites à `anon`/`PUBLIC`. Les vérifications SQL confirment `authenticated` autorisé et `anon` refusé.
 - Les contrôles d'autorisation ont été durcis contre les valeurs SQL NULL afin qu'un utilisateur sans appartenance ne puisse pas passer les vérifications.
+- Les opérations de changement de rôle et de retrait sont désormais des RPC `SECURITY INVOKER`, encadrées par des politiques RLS dédiées sur `agency_members` ; seule la lecture des e-mails reste dans une RPC `SECURITY DEFINER` privée aux responsables.
 - Les invitations e-mail ne sont pas activées : elles nécessitent une fonction serveur utilisant l'API Admin Auth et un service d'envoi configuré. Aucun secret n'est exposé dans le navigateur.
 
 ## Limites — ne pas utiliser avec de vrais prospects
@@ -81,6 +82,6 @@ Dépôt : https://github.com/contacttechagence-beep/Immo-pilot
 
 ## Refonte graphique Premium Luxury (26 novembre 2026)
 
-L'interface de l'espace agence adopte une identité visuelle premium : bleu nuit **#101B2D**, or **#C9A45C**, blanc cassé **#F7F8FA** et gris clair **#E8ECF1**. La navigation latérale conserve les sept modules existants (Prospects, Contacts, Biens, Mandats, Tâches, Agenda et Documents). Les cartes statistiques, tableaux, formulaires, états de focus et transitions ont été modernisés avec des adaptations mobiles et la prise en compte de `prefers-reduced-motion`.
+L'interface de l'espace agence adopte une identité visuelle premium : bleu nuit **#101B2D**, or **#C9A45C**, blanc cassé **#F7F8FA** et gris clair **#E8ECF1**. La navigation latérale conserve les modules existants (Prospects, Contacts, Biens, Mandats, Tâches, Agenda et Documents) et ajoute Équipe pour les responsables. Les cartes statistiques, tableaux, formulaires, états de focus et transitions ont été modernisés avec des adaptations mobiles et la prise en compte de `prefers-reduced-motion`.
 
 Cette refonte est limitée à la présentation HTML/CSS : aucune migration Supabase, modification de schéma, modification des règles métier ou changement des appels d'authentification et de persistance n'a été introduit. La mise en page premium est publiée sur la branche `main` via GitHub Pages. Les fonctions métier existantes sont conservées.
