@@ -36,6 +36,7 @@ Dans Authentication → URL Configuration :
 3. `202611220003_index_foreign_keys.sql`
 4. `20261126144634_crm_contacts_properties_mandates_tasks.sql`
 5. `20261126144651_crm_fk_indexes_and_member_assignment.sql`
+6. `20261126150000_tasks_assignee_fk_index.sql`
 
 La base indique bien ces trois migrations comme appliquées.
 
