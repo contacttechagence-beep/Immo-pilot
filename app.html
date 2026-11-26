@@ -99,7 +99,7 @@ async function loadProspects(){const {data,error}=await db.from('prospects').sel
 
 async function loadModuleData(){
  const specs=[['contacts','first_name,last_name'],['properties','created_at'],['mandates','created_at'],['tasks','due_at'],['appointments','starts_at'],['documents','created_at']];
- const results=await Promise.all(specs.map(([table,order])=>db.from(table).select('*').eq('agency_id',agencyId).order(order,{ascending:table==='tasks'})));
+ const results=await Promise.all(specs.map(([table,order])=>db.from(table).select('*').eq('agency_id',agencyId).order(order,{ascending:table==='tasks'||table==='appointments'})));
  for(let i=0;i<specs.length;i++){if(results[i].error){alert('Chargement '+specs[i][0]+' impossible : '+results[i].error.message);return}if(specs[i][0]==='documents')documentsData=results[i].data||[];else moduleData[specs[i][0]]=results[i].data||[]}
  renderModules();renderDocuments();populateDocumentLinks();renderCalendar();
 }
