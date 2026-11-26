@@ -57,6 +57,15 @@ La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit cr
 - Finaliser les sauvegardes, la restauration, les journaux, les règles de conservation et suppression, les procédures de sécurité et l'analyse RGPD.
 - La région UE ne suffit pas à démontrer la conformité RGPD.
 
+## Résultats des tests de la phase du 26 novembre 2026
+
+- JavaScript de l'application : analyse syntaxique réussie.
+- Création transactionnelle sous le rôle `authenticated` : contact, bien, mandat et tâche créés avec succès puis annulés ; aucune donnée fictive de test n'a été conservée.
+- Test de séparation entre deux utilisateurs appartenant à des agences distinctes : le second compte a vu `0` ligne du contact créé dans l'agence du premier compte.
+- Contrôle des quatre nouvelles tables : RLS activé ; privilèges `authenticated` présents ; aucun droit SELECT accordé à `anon`.
+- Advisor santé : aucun avertissement. Advisor performance : aucune clé étrangère non indexée ; les index inutilisés restent attendus tant que la base contient peu de données.
+- Restent deux avertissements de sécurité : `create_agency(text)` en `SECURITY DEFINER` (accès authentifié intentionnel, à auditer) et protection des mots de passe compromis désactivée (réglage Auth à activer manuellement).
+
 ## Modules développés dans la phase du 26 novembre 2026
 
 - `contacts` : répertoire CRM avec typologie et coordonnées ; liaison facultative d'un prospect à un contact.
