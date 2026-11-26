@@ -7,7 +7,7 @@
 - Front statique : GitHub Pages, `app.html`.
 - Backend : Supabase Auth + PostgreSQL 17.
 - Projet : `zzcvvvfnkjhdhrwqbfgm`, région `eu-west-3` (Paris), état vérifié : `ACTIVE_HEALTHY`.
-- Tables : `agencies`, `agency_members`, `prospects`, `activities`.
+- Tables : `agencies`, `agency_members`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`.
 - Les quatre tables ont RLS activé.
 - Les politiques métier utilisent les fonctions `private.is_agency_member` et `private.is_agency_admin` pour contrôler l'appartenance à l'agence.
 - Auth : inscription, confirmation par e-mail, connexion, déconnexion et récupération de mot de passe.
@@ -34,6 +34,8 @@ Dans Authentication → URL Configuration :
 1. `202611220001_initial_schema.sql`
 2. `202611220002_tighten_table_and_function_grants.sql`
 3. `202611220003_index_foreign_keys.sql`
+4. `20261126144634_crm_contacts_properties_mandates_tasks.sql`
+5. `20261126144651_crm_fk_indexes_and_member_assignment.sql`
 
 La base indique bien ces trois migrations comme appliquées.
 
@@ -54,9 +56,17 @@ La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit cr
 - Finaliser les sauvegardes, la restauration, les journaux, les règles de conservation et suppression, les procédures de sécurité et l'analyse RGPD.
 - La région UE ne suffit pas à démontrer la conformité RGPD.
 
+## Modules développés dans la phase du 26 novembre 2026
+
+- `contacts` : répertoire CRM avec typologie et coordonnées ; liaison facultative d'un prospect à un contact.
+- `properties` : portefeuille des biens, références uniques par agence, localisation, caractéristiques, prix et statut.
+- `mandates` : mandat lié à un bien et à un propriétaire de la même agence, type, dates, honoraires et statut.
+- `tasks` : tâches datées et priorisées, rattachées à un prospect, un contact ou un bien ; l'affectation est limitée à un membre de l'agence.
+- Les quatre nouvelles tables ont RLS activé, des politiques membres d'agence et des privilèges Data API explicites. Les clés étrangères entre entités incluent l'agence pour empêcher les liens inter-agences.
+
 ## Modules restant à développer
 
-CRM avancé et contacts, biens/mandats/transactions, documents et stockage, tâches et agenda, équipes/invitations/rôles, IA côté serveur, intégrations, statistiques et tableaux de bord, administration SaaS et facturation, journal d'audit et sécurité renforcée.
+Documents et stockage, agenda avancé, équipes/invitations/rôles fins, IA côté serveur, intégrations, statistiques et tableaux de bord avancés, administration SaaS et facturation, journal d'audit et sécurité renforcée.
 
 Aucune fonctionnalité prévue ne doit être supprimée pour accélérer le développement. Les essais utilisent exclusivement des données fictives. Aucun test utilisateur supplémentaire ne sera demandé avant que la phase de développement prévue soit terminée.
 
