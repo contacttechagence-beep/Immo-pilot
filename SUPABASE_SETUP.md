@@ -7,7 +7,7 @@
 - Front statique : GitHub Pages, `app.html`.
 - Backend : Supabase Auth + PostgreSQL 17.
 - Projet : `zzcvvvfnkjhdhrwqbfgm`, région `eu-west-3` (Paris), état vérifié : `ACTIVE_HEALTHY`.
-- Tables : `agencies`, `agency_members`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`.
+- Tables : `agencies`, `agency_members`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`, `documents`.
 - Les quatre tables ont RLS activé.
 - Les politiques métier utilisent les fonctions `private.is_agency_member` et `private.is_agency_admin` pour contrôler l'appartenance à l'agence.
 - Auth : inscription, confirmation par e-mail, connexion, déconnexion et récupération de mot de passe.
@@ -20,6 +20,7 @@
 - Score de qualification indicatif, priorités et conseil commercial.
 - Historique des appels, e-mails, rendez-vous, notes et changements de statut.
 - Rappels des actions en retard, du jour, à venir ou à planifier.
+- Documents privés : dépôt, rattachement à un prospect/contact/bien/mandat, liste, téléchargement et suppression.
 
 ## URL Auth à contrôler dans Supabase
 
@@ -37,6 +38,8 @@ Dans Authentication → URL Configuration :
 4. `20261126144634_crm_contacts_properties_mandates_tasks.sql`
 5. `20261126144651_crm_fk_indexes_and_member_assignment.sql`
 6. `20261126144822_tasks_assignee_fk_index.sql`
+7. `20261126145057_crm_private_document_management.sql`
+8. `20261126145214_documents_uploaded_by_index.sql`
 
 La base indique bien ces trois migrations comme appliquées.
 
@@ -73,6 +76,14 @@ La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit cr
 - `mandates` : mandat lié à un bien et à un propriétaire de la même agence, type, dates, honoraires et statut.
 - `tasks` : tâches datées et priorisées, rattachées à un prospect, un contact ou un bien ; l'affectation est limitée à un membre de l'agence.
 - Les quatre nouvelles tables ont RLS activé, des politiques membres d'agence et des privilèges Data API explicites. Les clés étrangères entre entités incluent l'agence pour empêcher les liens inter-agences.
+
+## Documents — module développé le 26 novembre 2026
+
+- Bucket `immopilot-documents` privé (jamais public), limite de 20 Mo par fichier et types MIME restreints.
+- Table `documents` avec RLS et droits Data API explicites ; chaque document est lié à son agence et peut être rattaché à un prospect, contact, bien ou mandat de la même agence.
+- Storage RLS : seuls les membres de l'agence peuvent déposer, lire/télécharger et supprimer les fichiers dont le chemin commence par leur `agency_id`.
+- Interface `app.html` : formulaire de dépôt, classement facultatif, liste, téléchargement authentifié et suppression.
+- À tester dans le navigateur avec un vrai fichier de test puis avec deux comptes d'agences distinctes ; aucun document de client réel ne doit être utilisé.
 
 ## Modules restant à développer
 
