@@ -1,63 +1,110 @@
-# ImmoPilot — configuration Supabase et état du prototype
+# ImmoPilot — configuration et état technique
 
-Le projet Supabase ImmoPilot existe dans la région Paris (eu-west-3). Le tableau de bord web utilise maintenant Supabase Auth et PostgreSQL. Il s'agit d'un prototype de validation, pas d'un service prêt pour les données réelles.
+État vérifié le 25 novembre 2026. Ce document décrit le prototype en place et les contrôles réellement effectués ; il ne constitue pas une validation de mise en production.
 
 ## Architecture installée
 
-- Front statique : GitHub Pages, fichier app.html.
-- Backend : Supabase Auth + PostgreSQL.
-- Projet Supabase : zzcvvvfnkjhdhrwqbfgm.
-- URL API : https://zzcvvvfnkjhdhrwqbfgm.supabase.co.
-- Tables : agencies, agency_members, prospects, activities.
-- Isolation par agence : RLS et colonne agency_id.
-- Authentification : création de compte par e-mail, confirmation d'adresse, connexion, déconnexion et récupération de mot de passe.
-- Les prospects créés depuis le tableau de bord sont enregistrés dans PostgreSQL et chargés depuis l'agence de l'utilisateur connecté.
+- Front statique : GitHub Pages, `app.html`.
+- Backend : Supabase Auth + PostgreSQL 17.
+- Projet : `zzcvvvfnkjhdhrwqbfgm`, région `eu-west-3` (Paris), état vérifié : `ACTIVE_HEALTHY`.
+- Tables : `agencies`, `agency_members`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`, `documents`, `appointments`.
+- Toutes les tables métier exposées ont RLS activé, avec des politiques adaptées à l'appartenance à l'agence.
+- Les politiques métier utilisent les fonctions `private.is_agency_member` et `private.is_agency_admin` pour contrôler l'appartenance à l'agence.
+- Auth : inscription, confirmation par e-mail, connexion, déconnexion et récupération de mot de passe.
+- Le front utilise une clé publishable. Ne jamais placer de clé secrète ou `service_role` dans le navigateur ou dans ce dépôt public.
 
-Le navigateur utilise une clé publishable Supabase. Elle est conçue pour être publique et ne doit jamais être confondue avec une clé service_role ou une clé secret. Aucune clé privilégiée, aucun mot de passe de base de données et aucun jeton privé ne doivent être placés dans le dépôt.
+## Fonctionnalités présentes
 
-## Action manuelle indispensable — URL Auth
+- Sélection de l'agence active parmi les agences auxquelles le compte appartient.
+- Gestion des prospects (ajout, lecture, modification, suppression, recherche, filtre et export CSV).
+- Score de qualification indicatif, priorités et conseil commercial.
+- Historique des appels, e-mails, rendez-vous, notes et changements de statut.
+- Rappels des actions en retard, du jour, à venir ou à planifier.
+- Documents privés : dépôt, rattachement à un prospect/contact/bien/mandat, liste, téléchargement et suppression.
+- Agenda : calendrier mensuel, rendez-vous/visites/appels/réunions/signatures, horaires, lieux, statuts et rattachement au CRM.
 
-Avant de tester l'inscription, ouvrir le projet Supabase puis Authentication → URL Configuration :
+## URL Auth à contrôler dans Supabase
 
-1. Régler Site URL sur :
-   https://contacttechagence-beep.github.io/Immo-pilot/app.html
-2. Ajouter exactement cette même adresse dans Redirect URLs.
-3. Enregistrer. Conserver la confirmation d'adresse e-mail activée.
-4. Vérifier que les e-mails de confirmation et de réinitialisation redirigent bien vers l'application.
+Dans Authentication → URL Configuration :
+- Site URL : `https://contacttechagence-beep.github.io/Immo-pilot/app.html`
+- Ajouter la même adresse dans Redirect URLs.
+- Garder la confirmation d'adresse e-mail activée.
+- Vérifier les liens de confirmation et de récupération.
 
-La configuration de redirection est nécessaire pour les confirmations et les réinitialisations. Documentation officielle : https://supabase.com/docs/guides/auth/redirect-urls
+## Migrations installées
 
-## Parcours utilisateur actuellement codé
+1. `202611220001_initial_schema.sql`
+2. `202611220002_tighten_table_and_function_grants.sql`
+3. `202611220003_index_foreign_keys.sql`
+4. `20261126144634_crm_contacts_properties_mandates_tasks.sql`
+5. `20261126144651_crm_fk_indexes_and_member_assignment.sql`
+6. `20261126144822_tasks_assignee_fk_index.sql`
+7. `20261126145057_crm_private_document_management.sql`
+8. `20261126145214_documents_uploaded_by_index.sql`
+9. `20261126145249_documents_permissions_hardening.sql`
+10. `20261126152712_crm_calendar_appointments.sql`
+11. `20261126152833_appointments_created_by_index.sql`
 
-1. L'utilisateur crée un compte avec e-mail et mot de passe.
-2. Si la confirmation e-mail est activée, il clique sur le lien reçu puis revient à l'application pour se connecter.
-3. À la première connexion, l'application lui demande le nom de son agence et appelle create_agency().
-4. L'application charge les prospects associés à son agence.
-5. Les opérations d'ajout, modification, suppression et export CSV utilisent les données Supabase.
+La base indique les onze migrations listées comme appliquées.
 
-La récupération de mot de passe envoie un lien ; le formulaire de nouveau mot de passe s'affiche à l'ouverture du lien de récupération.
+## Audit effectué le 25 novembre 2026
 
-## Migrations
+### RLS et fonction de création d'agence
 
-- supabase/migrations/202611220001_initial_schema.sql : schéma multi-agences et politiques RLS.
-- supabase/migrations/202611220002_tighten_table_and_function_grants.sql : réduction des privilèges SQL par défaut.
-- supabase/migrations/202611220003_index_foreign_keys.sql : index complémentaires sur les clés étrangères.
+Les quatre tables publiques ont RLS activé. Les politiques SELECT/INSERT/UPDATE/DELETE des tables prospects et activités contrôlent l'appartenance à l'agence. Les rôles et privilèges ont été inspectés.
 
-Ces migrations ont été appliquées au projet. La deuxième migration a aussi été ajoutée au dépôt pour conserver une trace versionnée des permissions.
+La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit créer une agence et sa première adhésion sans donner au navigateur des privilèges directs supplémentaires. Elle vérifie `auth.uid()`, valide le nom et définit un `search_path` vide. Vérification effective : `anon` ne peut pas l'exécuter, `PUBLIC` ne peut pas l'exécuter, seul `authenticated` en a le droit. L'avertissement Advisor sur une fonction SECURITY DEFINER accessible aux utilisateurs connectés demeure attendu pour ce flux ; la fonction doit néanmoins rester limitée à cette opération et être revue avant lancement.
 
-## Vérifications et limites connues
+### Points à traiter avant pilote réel
 
-- Les quatre tables existent et RLS est activé.
-- Le rôle anon n'a pas de droits directs sur les tables métier.
-- Le rôle authenticated a uniquement les droits de table prévus pour le prototype.
-- L'Advisor Supabase signale un avertissement sur public.create_agency(text), une fonction SECURITY DEFINER volontairement exécutable par les utilisateurs connectés pour créer leur première agence. Cette fonction vérifie auth.uid() et utilise un search_path vide, mais elle doit faire l'objet d'une revue de sécurité avant lancement.
-- Les trois clés étrangères initialement signalées ont reçu des index complémentaires. Les Advisors marquent maintenant certains index comme inutilisés, ce qui est attendu sur une base de test encore vide ; il faudra réévaluer après chargement de données fictives.
-- L'isolation réelle entre deux comptes et deux agences n'a pas encore été démontrée par un test de bout en bout.
-- L'envoi d'invitations, la gestion des rôles et l'administration des membres ne sont pas implémentés.
-- Les limites et tarifs Supabase peuvent évoluer ; vérifier les conditions en vigueur avant un usage commercial.
+- Supabase Advisor indique que la protection contre les mots de passe compromis (HaveIBeenPwned) est désactivée. L'activer dans les réglages Auth du tableau de bord Supabase.
+- Deux index de clés étrangères sont actuellement signalés comme inutilisés. Ils sont conservés ; réévaluer leur utilité après des essais avec un volume représentatif, sans les supprimer à l'aveugle.
+- Effectuer un test complet avec deux comptes et deux agences fictives : accès autorisés, absence de fuite croisée, changement d'agence, création/modification/suppression et historique.
+- Vérifier qu'un utilisateur ne peut pas réaffecter un enregistrement à une autre agence en manipulant les requêtes.
+- Finaliser les sauvegardes, la restauration, les journaux, les règles de conservation et suppression, les procédures de sécurité et l'analyse RGPD.
+- La région UE ne suffit pas à démontrer la conformité RGPD.
 
-## Avant un pilote réel
+## Résultats des tests de la phase du 26 novembre 2026
 
-Il faut encore réaliser un test avec au moins deux comptes et deux agences fictives, contrôler les accès inter-agences, auditer la fonction de création d'agence et les politiques RLS, traiter les index signalés, configurer les sauvegardes et la restauration, les journaux, les règles de conservation/suppression, les conditions contractuelles et le RGPD. Le choix d'une région UE ne suffit pas à établir la conformité.
+- JavaScript de l'application : analyse syntaxique réussie.
+- Création transactionnelle sous le rôle `authenticated` : contact, bien, mandat et tâche créés avec succès puis annulés ; aucune donnée fictive de test n'a été conservée.
+- Test de séparation entre deux utilisateurs appartenant à des agences distinctes : le second compte a vu `0` ligne du contact créé dans l'agence du premier compte.
+- Contrôle des quatre nouvelles tables : RLS activé ; privilèges `authenticated` présents ; aucun droit SELECT accordé à `anon`.
+- Advisor santé : aucun avertissement. Advisor performance : aucune clé étrangère non indexée ; les index inutilisés restent attendus tant que la base contient peu de données.
+- Restent deux avertissements de sécurité : `create_agency(text)` en `SECURITY DEFINER` (accès authentifié intentionnel, à auditer) et protection des mots de passe compromis désactivée (réglage Auth à activer manuellement).
 
-**Ne pas saisir de données personnelles réelles ou de prospects clients avant la fin de ces contrôles.**
+## Modules développés dans la phase du 26 novembre 2026
+
+- `contacts` : répertoire CRM avec typologie et coordonnées ; liaison facultative d'un prospect à un contact.
+- `properties` : portefeuille des biens, références uniques par agence, localisation, caractéristiques, prix et statut.
+- `mandates` : mandat lié à un bien et à un propriétaire de la même agence, type, dates, honoraires et statut.
+- `tasks` : tâches datées et priorisées, rattachées à un prospect, un contact ou un bien ; l'affectation est limitée à un membre de l'agence.
+- Les tables CRM ajoutées ont RLS activé, des politiques membres d'agence et des privilèges Data API explicites. Les clés étrangères entre entités incluent l'agence pour empêcher les liens inter-agences.
+
+## Agenda — module développé le 26 novembre 2026
+
+- Table `appointments` : rendez-vous, visites, appels, réunions, états des lieux et signatures ; début/fin, lieu, statut, description, responsable.
+- Calendrier mensuel interactif : navigation mois précédent/suivant, retour à aujourd'hui, sélection d'un jour et affichage du programme du jour.
+- Formulaire de création/modification et suppression ; horaires locaux convertis en timestamps avec fuseau (`timestamptz`).
+- RLS agence et contrôle que le responsable appartient à la même agence ; les liens prospect/contact/bien sont protégés contre les références inter-agences.
+- Tests de structure et de privilèges réussis ; `authenticated` autorisé, `anon` refusé. Aucun rendez-vous de test conservé.
+
+## Documents — module développé le 26 novembre 2026
+
+- Bucket `immopilot-documents` privé (jamais public), limite de 20 Mo par fichier et types MIME restreints.
+- Table `documents` avec RLS et droits Data API explicites ; chaque document est lié à son agence et peut être rattaché à un prospect, contact, bien ou mandat de la même agence.
+- Storage RLS : seuls les membres de l'agence peuvent déposer, lire/télécharger et supprimer les fichiers dont le chemin commence par leur `agency_id`.
+- Interface `app.html` : formulaire de dépôt, classement facultatif, liste, téléchargement authentifié et suppression.
+- Test SQL temporaire : un membre voit son document, un utilisateur d'une autre agence voit zéro ligne ; transaction annulée.
+- Vérification des droits : `authenticated` autorisé, `anon` explicitement révoqué.
+- Le transfert réel d'un fichier via navigateur et l'isolation Storage doivent encore être testés avec un fichier fictif ; aucun document de client réel ne doit être utilisé.
+
+## Modules restant à développer
+
+Équipes/invitations/rôles fins, IA côté serveur, intégrations, statistiques et tableaux de bord avancés, administration SaaS et facturation, journal d'audit et sécurité renforcée.
+
+Aucune fonctionnalité prévue ne doit être supprimée pour accélérer le développement. Les essais utilisent exclusivement des données fictives. Aucun test utilisateur supplémentaire ne sera demandé avant que la phase de développement prévue soit terminée.
+
+## Application
+
+https://contacttechagence-beep.github.io/Immo-pilot/app.html
