@@ -44,8 +44,10 @@ Dans Authentication → URL Configuration :
 9. `20261126145249_documents_permissions_hardening.sql`
 10. `20261126152712_crm_calendar_appointments.sql`
 11. `20261126152833_appointments_created_by_index.sql`
+12. `20261126180809_team_member_management.sql`
+13. `20261126180827_team_member_authz_hardening.sql`
 
-La base indique les onze migrations listées comme appliquées.
+La base indique treize migrations appliquées, dont les deux migrations d’administration de l’équipe.
 
 ## Audit effectué le 25 novembre 2026
 
@@ -101,9 +103,18 @@ La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit cr
 
 ## Modules restant à développer
 
-Équipes/invitations/rôles fins, IA côté serveur, intégrations, statistiques et tableaux de bord avancés, administration SaaS et facturation, journal d'audit et sécurité renforcée.
+Invitations sécurisées par e-mail, IA côté serveur, intégrations, statistiques et tableaux de bord avancés, administration SaaS et facturation, journal d'audit et sécurité renforcée.
 
 Aucune fonctionnalité prévue ne doit être supprimée pour accélérer le développement. Les essais utilisent exclusivement des données fictives. Aucun test utilisateur supplémentaire ne sera demandé avant que la phase de développement prévue soit terminée.
+
+## Équipe — administration des membres
+
+- `list_agency_members(uuid)` : réservée aux propriétaires et administrateurs, retourne l’identifiant, l’e-mail, le rôle et la date d’adhésion.
+- `update_agency_member_role(uuid, uuid, text)` : le propriétaire peut attribuer `admin` ou `agent` à un autre membre ; le rôle `owner` est protégé.
+- `remove_agency_member(uuid, uuid)` : propriétaire peut retirer admin/agent ; administrateur peut retirer agent ; auto-retrait et retrait du propriétaire interdits.
+- Fonctions `SECURITY DEFINER`, `search_path` vide, exécution révoquée à `PUBLIC` et `anon`, accordée uniquement à `authenticated` ; contrôle du rôle effectué dans la fonction.
+- La liste et les actions sont exposées dans l’onglet Équipe pour les comptes propriétaire/administrateur.
+- Invitations par e-mail non activées : une fonction serveur avec Admin Auth et un service d’envoi doit être déployée avant cette étape.
 
 ## Application
 

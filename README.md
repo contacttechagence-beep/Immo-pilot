@@ -16,13 +16,14 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 - Rappels : prochaines actions, retards et échéances.
 - Documents : stockage privé Supabase, classement par agence, rattachement facultatif à un prospect, contact, bien ou mandat, téléchargement et suppression ; formats PDF/Office/images/CSV/TXT, limite applicative de 20 Mo.
 - Agenda : calendrier mensuel, rendez-vous, visites, appels, réunions, signatures et états des lieux ; gestion des horaires, lieux, statuts et rattachement aux prospects, contacts et biens.
+- Équipe : consultation des membres, modification des rôles agent/administrateur par le propriétaire, retrait sécurisé des membres par propriétaire/administrateur.
 - Le navigateur utilise une clé publishable. Aucune clé `service_role` ou clé secrète ne doit être exposée dans le dépôt.
 
 ## Contrôles techniques effectués le 25 novembre 2026
 
 - Projet Supabase : état `ACTIVE_HEALTHY`, PostgreSQL 17.
 - À la date du contrôle initial, les tables métier de base avaient toutes RLS activé ; les modules CRM, documents et agenda ajoutés ensuite disposent également de RLS.
-- Onze migrations sont présentes dans la base et dans le dépôt.
+- Treize migrations sont enregistrées dans la base et dans le dépôt.
 - Les politiques RLS limitent les lectures et écritures aux membres de l'agence concernée.
 - La fonction `public.create_agency(text)` est une fonction `SECURITY DEFINER` nécessaire à la création initiale d'une agence. Elle vérifie la session authentifiée et utilise un `search_path` vide. Vérification des privilèges : exécution refusée à `anon` et à `PUBLIC`, autorisée à `authenticated`. L'avertissement Advisor concernant l'exécution par les utilisateurs connectés est donc à traiter comme une fonction privilégiée volontaire, à surveiller et à auditer, pas comme une permission anonyme.
 - L'Advisor signale que la protection contre les mots de passe compromis est désactivée : ce réglage doit être activé dans Supabase Auth avant un pilote réel.
@@ -56,9 +57,18 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 - Vérification des privilèges : `authenticated` peut accéder à la table, `anon` n'a aucun droit SELECT.
 - La validation de bout en bout d'un véritable transfert de fichier via navigateur et Storage avec deux comptes reste à effectuer.
 
+## Équipe — phase du 26 novembre 2026
+
+- RPC `list_agency_members` : liste les membres et leurs e-mails uniquement pour les propriétaires et administrateurs.
+- RPC `update_agency_member_role` : seul le propriétaire peut promouvoir/rétrograder un membre entre agent et administrateur ; un compte ne peut pas modifier son propre rôle ni le rôle propriétaire.
+- RPC `remove_agency_member` : le propriétaire peut retirer les administrateurs et agents ; un administrateur peut retirer les agents ; personne ne peut retirer le propriétaire ou son propre accès.
+- Les trois fonctions sont `SECURITY DEFINER`, utilisent `search_path` vide, et sont explicitement interdites à `anon`/`PUBLIC`. Les vérifications SQL confirment `authenticated` autorisé et `anon` refusé.
+- Les contrôles d'autorisation ont été durcis contre les valeurs SQL NULL afin qu'un utilisateur sans appartenance ne puisse pas passer les vérifications.
+- Les invitations e-mail ne sont pas activées : elles nécessitent une fonction serveur utilisant l'API Admin Auth et un service d'envoi configuré. Aucun secret n'est exposé dans le navigateur.
+
 ## Limites — ne pas utiliser avec de vrais prospects
 
-ImmoPilot reste un prototype. Les modules équipes/invitations et rôles fins, IA sécurisée, intégrations, statistiques avancées, facturation SaaS et administration restent à développer. La conformité RGPD, la conservation et suppression des données, les sauvegardes/restaurations, la supervision et les procédures d'incident doivent être finalisées avant toute exploitation commerciale.
+ImmoPilot reste un prototype. Les invitations sécurisées, IA côté serveur, intégrations, statistiques avancées, facturation SaaS et administration restent à développer. La conformité RGPD, la conservation et suppression des données, les sauvegardes/restaurations, la supervision et les procédures d'incident doivent être finalisées avant toute exploitation commerciale.
 
 **Utiliser uniquement des comptes et données fictifs pour les essais. Ne pas importer de données de vrais clients avant validation de la sécurité et du cadre RGPD.**
 
@@ -73,4 +83,4 @@ Dépôt : https://github.com/contacttechagence-beep/Immo-pilot
 
 L'interface de l'espace agence adopte une identité visuelle premium : bleu nuit **#101B2D**, or **#C9A45C**, blanc cassé **#F7F8FA** et gris clair **#E8ECF1**. La navigation latérale conserve les sept modules existants (Prospects, Contacts, Biens, Mandats, Tâches, Agenda et Documents). Les cartes statistiques, tableaux, formulaires, états de focus et transitions ont été modernisés avec des adaptations mobiles et la prise en compte de `prefers-reduced-motion`.
 
-Cette refonte est limitée à la présentation HTML/CSS : aucune migration Supabase, modification de schéma, modification des règles métier ou changement des appels d'authentification et de persistance n'a été introduit. Elle est enregistrée sur la branche de développement `dev/next-suite-phase` et n'est pas publiée sur le site public.
+Cette refonte est limitée à la présentation HTML/CSS : aucune migration Supabase, modification de schéma, modification des règles métier ou changement des appels d'authentification et de persistance n'a été introduit. La mise en page premium est publiée sur la branche `main` via GitHub Pages. Les fonctions métier existantes sont conservées.
