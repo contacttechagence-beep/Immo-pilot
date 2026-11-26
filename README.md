@@ -7,7 +7,7 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 - Site public et démonstration : `index.html`.
 - Espace connecté : `app.html`, publié via GitHub Pages.
 - Backend : Supabase Auth + PostgreSQL, projet ImmoPilot en région UE (Paris, `eu-west-3`).
-- Tables métier : `agencies`, `agency_members`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`, `documents`.
+- Tables métier : `agencies`, `agency_members`, `prospects`, `activities`, `contacts`, `properties`, `mandates`, `tasks`, `documents`, `appointments`.
 - Authentification : inscription, connexion, déconnexion et récupération de mot de passe.
 - Gestion des agences : appartenance multi-agences et sélection de l'agence active.
 - Prospects : création, consultation, modification, suppression, recherche, filtres et export CSV.
@@ -21,7 +21,7 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 ## Contrôles techniques effectués le 25 novembre 2026
 
 - Projet Supabase : état `ACTIVE_HEALTHY`, PostgreSQL 17.
-- Les quatre tables métier existent et ont toutes RLS activé.
+- À la date du contrôle initial, les tables métier de base avaient toutes RLS activé ; les modules CRM, documents et agenda ajoutés ensuite disposent également de RLS.
 - Onze migrations sont présentes dans la base et dans le dépôt.
 - Les politiques RLS limitent les lectures et écritures aux membres de l'agence concernée.
 - La fonction `public.create_agency(text)` est une fonction `SECURITY DEFINER` nécessaire à la création initiale d'une agence. Elle vérifie la session authentifiée et utilise un `search_path` vide. Vérification des privilèges : exécution refusée à `anon` et à `PUBLIC`, autorisée à `authenticated`. L'avertissement Advisor concernant l'exécution par les utilisateurs connectés est donc à traiter comme une fonction privilégiée volontaire, à surveiller et à auditer, pas comme une permission anonyme.
