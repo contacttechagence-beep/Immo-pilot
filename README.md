@@ -15,7 +15,8 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 - Historique : appels, e-mails, rendez-vous, notes et changements de statut.
 - Rappels : prochaines actions, retards et échéances.
 - Documents : stockage privé Supabase, classement par agence, rattachement facultatif à un prospect, contact, bien ou mandat, téléchargement et suppression ; formats PDF/Office/images/CSV/TXT, limite applicative de 20 Mo.
-- Agenda : calendrier mensuel, rendez-vous, visites, appels, réunions, signatures et états des lieux ; gestion des horaires, lieux, statuts et rattachement aux prospects, contacts et biens.
+- Agenda : calendrier mensuel, rendez-vous, visites, appels, réunions, signatures et états des lieux ; gestion des horaires, lieux, statuts, rattachement CRM et attribution aux membres.
+- Tâches : attribution à un membre de l’agence ; les affectations sont contrôlées par une clé étrangère composite agence/membre.
 - Équipe : consultation des membres, modification des rôles agent/administrateur par le propriétaire, retrait sécurisé des membres par propriétaire/administrateur.
 - Le navigateur utilise une clé publishable. Aucune clé `service_role` ou clé secrète ne doit être exposée dans le dépôt.
 
@@ -23,7 +24,7 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 
 - Projet Supabase : état `ACTIVE_HEALTHY`, PostgreSQL 17.
 - À la date du contrôle initial, les tables métier de base avaient toutes RLS activé ; les modules CRM, documents et agenda ajoutés ensuite disposent également de RLS.
-- Quatorze migrations sont enregistrées dans la base et dans le dépôt.
+- Quinze migrations sont enregistrées dans la base et dans le dépôt.
 - Les politiques RLS limitent les lectures et écritures aux membres de l'agence concernée.
 - La fonction `public.create_agency(text)` est une fonction `SECURITY DEFINER` nécessaire à la création initiale d'une agence. Elle vérifie la session authentifiée et utilise un `search_path` vide. Vérification des privilèges : exécution refusée à `anon` et à `PUBLIC`, autorisée à `authenticated`. L'avertissement Advisor concernant l'exécution par les utilisateurs connectés est donc à traiter comme une fonction privilégiée volontaire, à surveiller et à auditer, pas comme une permission anonyme.
 - L'Advisor signale que la protection contre les mots de passe compromis est désactivée : ce réglage doit être activé dans Supabase Auth avant un pilote réel.
@@ -65,6 +66,8 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 - Les trois fonctions sont `SECURITY DEFINER`, utilisent `search_path` vide, et sont explicitement interdites à `anon`/`PUBLIC`. Les vérifications SQL confirment `authenticated` autorisé et `anon` refusé.
 - Les contrôles d'autorisation ont été durcis contre les valeurs SQL NULL afin qu'un utilisateur sans appartenance ne puisse pas passer les vérifications.
 - Les opérations de changement de rôle et de retrait sont désormais des RPC `SECURITY INVOKER`, encadrées par des politiques RLS dédiées sur `agency_members` ; seule la lecture des e-mails reste dans une RPC `SECURITY DEFINER` privée aux responsables.
+- Tous les membres peuvent obtenir la liste d’affectation ; les e-mails sont masqués pour les agents et restent visibles aux responsables.
+- Les formulaires Tâches et Agenda permettent d’attribuer un élément à un membre de la même agence. La base rejette les affectations hors agence.
 - Les invitations e-mail ne sont pas activées : elles nécessitent une fonction serveur utilisant l'API Admin Auth et un service d'envoi configuré. Aucun secret n'est exposé dans le navigateur.
 
 ## Limites — ne pas utiliser avec de vrais prospects

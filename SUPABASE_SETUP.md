@@ -47,8 +47,9 @@ Dans Authentication → URL Configuration :
 12. `20261126180809_team_member_management.sql`
 13. `20261126180827_team_member_authz_hardening.sql`
 14. `20261126181152_team_member_rls_mutations.sql`
+15. `20261126181605_team_assignment_roster.sql`
 
-La base indique quatorze migrations appliquées, dont les deux migrations d’administration de l’équipe.
+La base indique quinze migrations appliquées, dont les deux migrations d’administration de l’équipe.
 
 ## Audit effectué le 25 novembre 2026
 
