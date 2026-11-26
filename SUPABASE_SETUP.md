@@ -77,7 +77,7 @@ La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit cr
 - Test de séparation entre deux utilisateurs appartenant à des agences distinctes : le second compte a vu `0` ligne du contact créé dans l'agence du premier compte.
 - Contrôle des quatre nouvelles tables : RLS activé ; privilèges `authenticated` présents ; aucun droit SELECT accordé à `anon`.
 - Advisor santé : aucun avertissement. Advisor performance : aucune clé étrangère non indexée ; les index inutilisés restent attendus tant que la base contient peu de données.
-- Restent deux avertissements de sécurité : `create_agency(text)` en `SECURITY DEFINER` (accès authentifié intentionnel, à auditer) et protection des mots de passe compromis désactivée (réglage Auth à activer manuellement).
+- L’Advisor sécurité signale les RPC `SECURITY DEFINER` accessibles à `authenticated` (`create_agency`, lecture des membres et opérations d’invitation). Ces fonctions sont volontairement exposées pour réaliser des opérations atomiques, vérifient l’identité/le rôle/l’agence, utilisent un `search_path` vide et refusent `anon` ; elles doivent rester auditées. L’autre avertissement concerne la protection des mots de passe compromis désactivée (réglage Auth à activer manuellement).
 
 ## Modules développés dans la phase du 26 novembre 2026
 
