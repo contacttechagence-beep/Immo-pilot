@@ -138,6 +138,7 @@ Migration appliquée : `20261126193332_agency_invitation_links.sql`.
 - `revoke_agency_invitation(uuid,uuid)` : invalide immédiatement un lien non utilisé.
 - `accept_agency_invitation(text)` : accepte une seule fois, avant expiration, uniquement si l’utilisateur connecté a confirmé exactement l’adresse e-mail invitée.
 - Les liens expirent après 7 jours. Les invitations précédentes pour la même adresse sont révoquées lors de la création d’un nouveau lien.
+- Test transactionnel avec deux comptes confirmés : création par un propriétaire, vérification que le jeton n’est pas stocké en clair, acceptation par le compte destinataire avec le rôle attendu, puis rejet d’une seconde utilisation. Transaction annulée : aucune invitation ou adhésion de test conservée.
 - L’interface permet de créer, copier et révoquer les liens. Aucun e-mail automatique n’est envoyé ; le partage s’effectue avec la messagerie habituelle.
 - La page d’authentification conserve le paramètre d’invitation pendant la création du compte et traite le jeton après authentification.
 
