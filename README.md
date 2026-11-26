@@ -29,7 +29,7 @@ ImmoPilot est un logiciel en cours de développement pour les agences immobiliè
 
 ## Limites — ne pas utiliser avec de vrais prospects
 
-ImmoPilot reste un prototype. Les modules CRM avancés, biens/mandats, documents, organisation, équipes et invitations, IA sécurisée, intégrations, statistiques, facturation SaaS et fonctions d'administration restent à développer. La conformité RGPD, la conservation et suppression des données, les sauvegardes/restaurations, la supervision et les procédures d'incident doivent être finalisées avant toute exploitation commerciale.
+ImmoPilot reste un prototype. Les modules documents, agenda avancé, équipes/invitations et rôles fins, IA sécurisée, intégrations, statistiques avancées, facturation SaaS et administration restent à développer. La conformité RGPD, la conservation et suppression des données, les sauvegardes/restaurations, la supervision et les procédures d'incident doivent être finalisées avant toute exploitation commerciale.
 
 **Utiliser uniquement des comptes et données fictifs pour les essais. Ne pas importer de données de vrais clients avant validation de la sécurité et du cadre RGPD.**
 
