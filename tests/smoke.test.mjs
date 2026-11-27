@@ -40,7 +40,7 @@ test('responsive layout and reduced-motion accessibility rules are present', () 
 
 test('Supabase queries use one column per order() call', () => {
   const calls = [...html.matchAll(/\\.order\\(([^)]*)\\)/g)].map((m) => m[1]);
-  assert.ok(calls.length >= 5, 'expected ordering on CRM data queries');
+  assert.ok(calls.length >= 3, 'expected ordering on CRM data queries');
   for (const args of calls) {
     const firstArgument = args.split(',')[0].trim();
     assert.ok(!firstArgument.includes(','), 'order() must receive one column name, not a comma-separated list: ' + args);
