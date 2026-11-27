@@ -49,3 +49,15 @@ test('Supabase queries use one column per order() call', () => {
   assert.match(html, /\.order\(order,\{ascending\}\)/);
   assert.match(html, /query=query\.order\(secondary,\{ascending:true\}\)/);
 });
+
+
+test('document storage stays agency-scoped and private in application flows', () => {
+  assert.match(html, /storage\.from\('immopilot-documents'\)\.upload\(path,file/);
+  assert.match(html, /const path=agencyId\+'\/'\+crypto\.randomUUID\(\)/);
+  assert.match(html, /const payload=\{agency_id:agencyId,[\s\S]*storage_path:path/);
+  assert.match(html, /storage\.from\('immopilot-documents'\)\.download\(d\.storage_path\)/);
+  assert.match(html, /storage\.from\('immopilot-documents'\)\.remove\(\[d\.storage_path\]\)/);
+  assert.match(html, /documents'\)\.delete\(\)\.eq\('id',id\)\.eq\('agency_id',agencyId\)/);
+  assert.match(html, /file\.size>20\*1024\*1024/);
+  assert.match(html, /if\(metaError\)\{await db\.storage\.from\('immopilot-documents'\)\.remove\(\[path\]\)/);
+});
