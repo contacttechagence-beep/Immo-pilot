@@ -37,3 +37,14 @@ test('responsive layout and reduced-motion accessibility rules are present', () 
   assert.match(html, /@media\s*\(max-width:\s*560px\)/);
   assert.match(html, /prefers-reduced-motion:\s*reduce/);
 });
+
+test('Supabase queries use one column per order() call', () => {
+  const calls = [...html.matchAll(/\\.order\\(([^)]*)\\)/g)].map((m) => m[1]);
+  assert.ok(calls.length >= 5, 'expected ordering on CRM data queries');
+  for (const args of calls) {
+    const firstArgument = args.split(',')[0].trim();
+    assert.ok(!firstArgument.includes(','), 'order() must receive one column name, not a comma-separated list: ' + args);
+  }
+  assert.match(html, /\\.order\\(order,\\{ascending\\}\\)/);
+  assert.match(html, /query=query\\.order\\(secondary,\\{ascending:true\\}\\)/);
+});
