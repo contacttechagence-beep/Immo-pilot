@@ -25,7 +25,7 @@ test('authentication, Supabase persistence and core CRM actions remain wired', (
 });
 
 test('all inline JavaScript parses without syntax errors', () => {
-  const scripts = [...html.matchAll(/<script\\b[^>]*>([\\s\\S]*?)<\\/script>/gi)];
+  const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
   assert.ok(scripts.length > 0, 'no inline script found');
   scripts.forEach((match, index) => {
     assert.doesNotThrow(() => new vm.Script(match[1], { filename: 'app-inline-' + index + '.js' }));
@@ -33,7 +33,7 @@ test('all inline JavaScript parses without syntax errors', () => {
 });
 
 test('responsive layout and reduced-motion accessibility rules are present', () => {
-  assert.match(html, /@media\\s*\\(max-width:\\s*760px\\)/);
-  assert.match(html, /@media\\s*\\(max-width:\\s*560px\\)/);
-  assert.match(html, /prefers-reduced-motion:\\s*reduce/);
+  assert.match(html, /@media\s*\(max-width:\s*760px\)/);
+  assert.match(html, /@media\s*\(max-width:\s*560px\)/);
+  assert.match(html, /prefers-reduced-motion:\s*reduce/);
 });
