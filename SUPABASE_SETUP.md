@@ -1,6 +1,6 @@
 # ImmoPilot — configuration et état technique
 
-État vérifié le 25 novembre 2026. Ce document décrit le prototype en place et les contrôles réellement effectués ; il ne constitue pas une validation de mise en production.
+État vérifié le 27 novembre 2026. Ce document décrit le prototype en place et les contrôles réellement effectués ; il ne constitue pas une validation de mise en production.
 
 ## Architecture installée
 
@@ -53,15 +53,15 @@ Dans Authentication → URL Configuration :
 18. `20261126193930_agency_audit_trail.sql`
 19. `20261126194117_agency_audit_read_only_permissions.sql`
 
-La base indique dix-huit migrations appliquées, dont les migrations d’administration de l’équipe, d’invitations et de journal d’audit.
+Les 19 migrations listées ci-dessus sont présentes dans le dépôt. La cohérence entre le dépôt et l’historique Supabase doit être contrôlée après chaque migration.
 
-## Audit effectué le 25 novembre 2026
+## Audit complémentaire effectué le 27 novembre 2026
 
 ### RLS et fonction de création d'agence
 
-Les quatre tables publiques ont RLS activé. Les politiques SELECT/INSERT/UPDATE/DELETE des tables prospects et activités contrôlent l'appartenance à l'agence. Les rôles et privilèges ont été inspectés.
+Les 12 tables du schéma `public` ont RLS activé et disposent toutes d’au moins une politique. Les politiques SELECT/INSERT/UPDATE/DELETE des tables prospects et activités contrôlent l'appartenance à l'agence. Les rôles et privilèges ont été inspectés.
 
-La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit créer une agence et sa première adhésion sans donner au navigateur des privilèges directs supplémentaires. Elle vérifie `auth.uid()`, valide le nom et définit un `search_path` vide. Vérification effective : `anon` ne peut pas l'exécuter, `PUBLIC` ne peut pas l'exécuter, seul `authenticated` en a le droit. L'avertissement Advisor sur une fonction SECURITY DEFINER accessible aux utilisateurs connectés demeure attendu pour ce flux ; la fonction doit néanmoins rester limitée à cette opération et être revue avant lancement.
+La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit créer une agence et sa première adhésion sans donner au navigateur des privilèges directs supplémentaires. Elle vérifie `auth.uid()`, valide le nom et définit un `search_path` vide. Vérification effective : `anon` et `PUBLIC` ne peuvent pas l'exécuter ; `authenticated` dispose du droit d'exécution. La fonction valide l’identité et le nom de l’agence. L'avertissement Advisor sur une fonction SECURITY DEFINER accessible aux utilisateurs connectés demeure attendu pour ce flux ; la fonction doit néanmoins rester limitée à cette opération et être revue avant lancement.
 
 ### Points à traiter avant pilote réel
 
@@ -79,7 +79,7 @@ La fonction `public.create_agency(text)` est `SECURITY DEFINER` car elle doit cr
 - Test de séparation entre deux utilisateurs appartenant à des agences distinctes : le second compte a vu `0` ligne du contact créé dans l'agence du premier compte.
 - Contrôle des quatre nouvelles tables : RLS activé ; privilèges `authenticated` présents ; aucun droit SELECT accordé à `anon`.
 - Advisor santé : aucun avertissement. Advisor performance : aucune clé étrangère non indexée ; les index inutilisés restent attendus tant que la base contient peu de données.
-- L’Advisor sécurité signale les RPC `SECURITY DEFINER` accessibles à `authenticated` (`create_agency`, lecture des membres et opérations d’invitation). Ces fonctions sont volontairement exposées pour réaliser des opérations atomiques, vérifient l’identité/le rôle/l’agence, utilisent un `search_path` vide et refusent `anon` ; elles doivent rester auditées. L’autre avertissement concerne la protection des mots de passe compromis désactivée (réglage Auth à activer manuellement).
+- L’Advisor sécurité signale les RPC `SECURITY DEFINER` accessibles à `authenticated` (`create_agency`, lecture des membres et opérations d’invitation). Ces fonctions sont volontairement exposées pour réaliser des opérations atomiques, vérifient l’identité/le rôle/l’agence, utilisent un `search_path` vide et refusent `anon` ; elles doivent rester auditées. La protection contre les mots de passe compromis (HaveIBeenPwned) reste désactivée et doit être activée dans les réglages Auth du tableau de bord Supabase. L’activation n’a pas été effectuée par SQL.
 
 ## Modules développés dans la phase du 26 novembre 2026
 
