@@ -152,8 +152,8 @@ let workspaceLoading=false;async function startWorkspace(){if(!currentUser||work
 async function loadProspects(){const {data,error}=await db.from('prospects').select('id,agency_id,name,email,phone,project_type,area,budget,status,next_action_at,notes,contact_id,created_at').eq('agency_id',agencyId).order('created_at',{ascending:false});if(error){alert('Chargement des prospects impossible : '+error.message);return}prospects=(data||[]).map(p=>({id:p.id,name:p.name,email:p.email||'',phone:p.phone||'',project:p.project_type||'Autre',area:p.area||'',budget:p.budget||0,status:p.status,date:p.next_action_at||'',notes:p.notes||'',contact_id:p.contact_id||''}));render()}
 
 async function loadModuleData(){
- const specs=[['contacts','first_name,last_name'],['properties','created_at'],['mandates','created_at'],['tasks','due_at'],['appointments','starts_at'],['documents','created_at']];
- const results=await Promise.all(specs.map(([table,order])=>db.from(table).select('*').eq('agency_id',agencyId).order(order,{ascending:table==='tasks'||table==='appointments'})));
+ const specs=[['contacts','first_name',true,'last_name'],['properties','created_at',false],['mandates','created_at',false],['tasks','due_at',true],['appointments','starts_at',true],['documents','created_at',false]];
+ const results=await Promise.all(specs.map(([table,order,ascending,secondary])=>{let query=db.from(table).select('*').eq('agency_id',agencyId).order(order,{ascending});if(secondary)query=query.order(secondary,{ascending:true});return query;}));
  for(let i=0;i<specs.length;i++){if(results[i].error){alert('Chargement '+specs[i][0]+' impossible : '+results[i].error.message);return}if(specs[i][0]==='documents')documentsData=results[i].data||[];else moduleData[specs[i][0]]=results[i].data||[]}
  renderModules();renderDocuments();populateDocumentLinks();renderCalendar();renderDashboardMetrics();renderOperationalOverview();if(['owner','admin'].includes(agencyRole))await loadAuditLogs();
 }
