@@ -61,3 +61,12 @@ test('document storage stays agency-scoped and private in application flows', ()
   assert.match(html, /file\.size>20\*1024\*1024/);
   assert.match(html, /if\(metaError\)\{await db\.storage\.from\('immopilot-documents'\)\.remove\(\[path\]\)/);
 });
+
+test('CRM reads and writes stay scoped to the active agency', () => {
+  assert.match(html, /async function loadProspects\(\)[\s\S]*?\.eq\('agency_id',agencyId\)/);
+  assert.match(html, /async function loadModuleData\(\)[\s\S]*?\.eq\('agency_id',agencyId\)/);
+  assert.match(html, /async function loadAuditLogs\(\)[\s\S]*?\.eq\('agency_id',agencyId\)/);
+  assert.match(html, /let payload=\{agency_id:agencyId\}/);
+  assert.match(html, /db\.from\(table\)\.update\(payload\)\.eq\('id',editingModuleId\)\.eq\('agency_id',agencyId\)/);
+  assert.match(html, /db\.from\(table\)\.delete\(\)\.eq\('id',id\)\.eq\('agency_id',agencyId\)/);
+});
