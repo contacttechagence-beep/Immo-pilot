@@ -70,3 +70,12 @@ test('CRM reads and writes stay scoped to the active agency', () => {
   assert.match(html, /db\.from\(table\)\.update\(payload\)\.eq\('id',editingModuleId\)\.eq\('agency_id',agencyId\)/);
   assert.match(html, /db\.from\(table\)\.delete\(\)\.eq\('id',id\)\.eq\('agency_id',agencyId\)/);
 });
+
+
+test('module forms validate non-negative numeric values and date ranges', () => {
+  assert.match(html, /const numericFields=\['price','surface_area','rooms','bedrooms','fee_rate'\]/);
+  assert.match(html, /payload\[key\]<0/);
+  assert.match(html, /payload\.fee_rate>100/);
+  assert.match(html, /payload\.end_date<payload\.start_date/);
+  assert.match(html, /new Date\(payload\.ends_at\)<=new Date\(payload\.starts_at\)/);
+});
